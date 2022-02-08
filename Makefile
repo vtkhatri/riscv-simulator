@@ -33,7 +33,7 @@ build:
 
 test:
 	@echo "not implemented yet"
-	@echo "should look for files in 'memfiles/' and pass them one by one to our executable, storing output as required."
+	@echo "should look for *.mem files in 'testcases/' and pass them one by one to our executable, storing output as required."
 
 testfiles: $(ASSS) $(OBJS) $(MEMS)
 
