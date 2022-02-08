@@ -16,7 +16,7 @@ all: build test
 clean: rm $(TARGETEXEC)
 
 build:
-	@echo $(CC) $(CCARGS) $(SRCFILES) -o $(TARGETEXEC)
+	$(CC) $(CCARGS) $(SRCFILES) -o $(TARGETEXEC)
 
 test:
 	@echo "not implemented yet"
