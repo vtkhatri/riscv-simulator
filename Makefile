@@ -28,8 +28,8 @@ all: build testfiles test
 clean:
 	rm -f $(EXEC) $(OBJS) $(MEMS) $(ASSS)
 
-# build:
-# 	$(CC) $(CCARGS) $(SRCS) -o $(EXEC)
+build:
+	$(CC) $(CCARGS) $(SRCS) -o $(EXEC)
 
 test:
 	@echo "not implemented yet"
@@ -38,7 +38,6 @@ test:
 testfiles: $(ASSS) $(OBJS) $(MEMS)
 
 $(TESTDIRS)/%.s: $(TESTDIRS)/%.c
-	@echo $(TESTS) $(ASSS) $(OBJS) $(MEMS)
 	$(RVGCC) -S -fpic -march=rv32i -mabi=ilp32 $< -o $@
 
 $(TESTDIRS)/%.o: $(TESTDIRS)/%.s
