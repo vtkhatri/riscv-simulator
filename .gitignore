@@ -1,2 +1,5 @@
 .vscode/
 rsim
+testcases/*.o
+testcases/*.mem
+testcases/*.s
