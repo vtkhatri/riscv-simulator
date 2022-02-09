@@ -3,3 +3,4 @@ rsim
 testcases/*.o
 testcases/*.mem
 testcases/*.s
+testcases/*.log

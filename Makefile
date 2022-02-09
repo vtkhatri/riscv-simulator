@@ -7,6 +7,10 @@ TESTS := $(shell find $(TESTDIRS) -name '*.c')
 ASSS := $(TESTS:c=s)
 OBJS := $(TESTS:c=o)
 MEMS := $(TESTS:c=mem)
+LOGS := $(TESTS:c=log)
+
+PROGRAMCOUNTER := 0
+STACKADDRESS := 65535
 
 ifdef MEMDIRS
 	MEMS += $(shell find $(MEMDIRS) -name '*.mem') # ability to provide mem files
@@ -22,7 +26,7 @@ RVAS := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux-
 
 GREPCLEAN := grep -o '^[[:blank:]]*[[:xdigit:]]*:[[:blank:]][[:xdigit:]]*'
 
-EXEC := rsim # Risc-v SIMulator -> rsim
+EXEC := ./rsim # Risc-v SIMulator -> rsim
 CCARGS := -g
 
 ifdef debug # allows us to dynamically define a pre-processor directive from make command-line
@@ -32,14 +36,15 @@ endif
 all: build testfiles test
 
 clean:
-	rm -f $(EXEC) $(OBJS) $(MEMS) $(ASSS)
+	rm -f $(EXEC) $(OBJS) $(MEMS) $(ASSS) $(LOGS)
 
 build:
 	$(CC) $(CCARGS) $(SRCS) -o $(EXEC)
 
-test:
-	@echo "not implemented yet"
-	@echo "should look for *.mem files in 'testcases/' and MEMFILES=<path>, then pass them one by one to rsim, storing output as required."
+test: $(LOGS)
+
+%.log: %.mem
+	$(EXEC) $< $(PROGRAMCOUNTER) $(STACKADDRESS)
 
 testfiles: $(ASSS) $(OBJS) $(MEMS)
 
