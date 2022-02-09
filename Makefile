@@ -13,7 +13,7 @@ ifdef MEMDIRS
 endif
 
 ifdef ASSSDIRS
-	ASSS += $(shell find $(ASSSDIRS+) -name '*.s') # ability to provide mem files
+	ASSS += $(shell find $(ASSSDIRS) -name '*.s') # ability to provide mem files
 endif
 
 RVOBJDUMP := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux-gnu-objdump
