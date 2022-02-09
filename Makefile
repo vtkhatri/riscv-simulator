@@ -8,7 +8,13 @@ ASSS := $(TESTS:c=s)
 OBJS := $(TESTS:c=o)
 MEMS := $(TESTS:c=mem)
 
-# MEMS += $(shell find $(MEMDIRS) -name '*.mem') # ability to provide mem files
+ifdef MEMDIRS
+	MEMS += $(shell find $(MEMDIRS) -name '*.mem') # ability to provide mem files
+endif
+
+ifdef ASSSDIRS
+	ASSS += $(shell find $(ASSSDIRS+) -name '*.s') # ability to provide mem files
+endif
 
 RVOBJDUMP := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux-gnu-objdump
 RVGCC := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux-gnu-gcc
@@ -33,15 +39,15 @@ build:
 
 test:
 	@echo "not implemented yet"
-	@echo "should look for *.mem files in 'testcases/' and pass them one by one to our executable, storing output as required."
+	@echo "should look for *.mem files in 'testcases/' and MEMFILES=<path>, then pass them one by one to rsim, storing output as required."
 
 testfiles: $(ASSS) $(OBJS) $(MEMS)
 
-$(TESTDIRS)/%.s: $(TESTDIRS)/%.c
+%.s: %.c
 	$(RVGCC) -S -fpic -march=rv32i -mabi=ilp32 $< -o $@
 
-$(TESTDIRS)/%.o: $(TESTDIRS)/%.s
+%.o: %.s
 	$(RVAS) -ahld $< -o $@
 
-$(TESTDIRS)/%.mem: $(TESTDIRS)/%.o
+%.mem: %.o
 	$(RVOBJDUMP) -d $< | $(GREPCLEAN) > $@
