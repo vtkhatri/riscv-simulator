@@ -4,10 +4,12 @@ SRCDIRS := src
 SRCS := $(shell find $(SRCDIRS) -name '*.c')
 TESTDIRS := testcases
 TESTS := $(shell find $(TESTDIRS) -name '*.c')
-ASSS := $(TESTS:c=s)
-OBJS := $(TESTS:c=o)
-MEMS := $(TESTS:c=mem)
-LOGS := $(TESTS:c=log)
+CASSS := $(TESTS:c=s)
+ASSSS := $(shell find $(TESTDIRS) -name '*.s')
+ASSS := $(CASSS) $(ASSSS)
+OBJS := $(ASSS:s=o)
+MEMS := $(ASSS:s=mem)
+LOGS := $(ASSS:s=log)
 
 PROGRAMCOUNTER := 0
 STACKADDRESS := 65535
@@ -17,7 +19,7 @@ ifdef MEMDIRS
 endif
 
 ifdef ASSSDIRS
-	ASSS += $(shell find $(ASSSDIRS) -name '*.s') # ability to provide mem files
+	ASSS += $(shell find $(ASSSDIRS) -name '*.s') # ability to provide assembly files
 endif
 
 RVOBJDUMP := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux-gnu-objdump
@@ -36,7 +38,7 @@ endif
 all: build testfiles test
 
 clean:
-	rm -f $(EXEC) $(OBJS) $(MEMS) $(ASSS) $(LOGS)
+	rm -f $(EXEC) $(OBJS) $(MEMS) $(CASSS) $(LOGS)
 
 build:
 	$(CC) $(CCARGS) $(SRCS) -o $(EXEC)

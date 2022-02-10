@@ -1,6 +1,6 @@
 .vscode/
 rsim
-testcases/*.o
-testcases/*.mem
-testcases/*.s
-testcases/*.log
+testcases/c/*.s
+testcases/*/*.o
+testcases/*/*.mem
+testcases/*/*.log

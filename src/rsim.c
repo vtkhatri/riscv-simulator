@@ -66,14 +66,13 @@ int main(int argc, char** argv) {
         }
         stackaddress = atoi(argv[3]);
         if (stackaddress == 0) {
-            printf("[ERRRO] invalid stack address 0, quitting.\n");
+            printf("[ERROR] invalid stack address 0, quitting.\n");
             return(1);
         }
     }
 
     // initializing logfile
-    char *logfilename = (char *) malloc (sizeof(memfilename) + sizeof(".log"));
-    strcpy(logfilename, memfilename);
+    char *logfilename = memfilename;
     stripextension(logfilename);
     strcat(logfilename, ".log");
 
