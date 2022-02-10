@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     unsigned int programcounter = 0;
     unsigned int stackaddress = 65535;
 
-    char *memfilename = (char *) malloc (sizeof(argv[1]));
+    char *memfilename = (char *) malloc (strlen(argv[1]) + 1);
     memfilename = argv[1];
 
     if (argv[2] == NULL) {
@@ -85,5 +85,7 @@ int main(int argc, char** argv) {
 
     fprintf(logfile, "memory file = %s\nprogram counter = %d\nstack address = %d\n", memfilename, programcounter, stackaddress);
 
+    free(memfilename);
+    free(logfilename);
     return(0);
 }
