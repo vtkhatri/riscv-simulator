@@ -72,7 +72,8 @@ int main(int argc, char** argv) {
     }
 
     // initializing logfile
-    char *logfilename = memfilename;
+    char *logfilename = (char *) malloc (strlen(memfilename) +1);
+    strcpy(logfilename, memfilename);
     stripextension(logfilename);
     strcat(logfilename, ".log");
 
