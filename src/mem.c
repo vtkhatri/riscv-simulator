@@ -10,20 +10,28 @@
 #define halfword 16
 #define byte     8
 
-#define wordalignment     4
-#define halfwordalignment 2
+#define wordalignment     sizeof(int)
+#define halfwordalignment sizeof(int)/2
+#define bytealignment     sizeof(char)
 
-#define halfwordlowmask  65535
-#define halfwordhighmask 4294901760
-#define byte1mask        255
-#define byte2mask        65280
-#define byte3mask        16711680
-#define byte4mask        4278190080
+#define halfwordlowmask  65535      // 0x0000ffff
+#define halfwordhighmask 4294901760 // 0xffff0000
+
+#define byte1mask        255        // 0x000000ff
+#define byte1maskinv     4294967040 // 0xffffff00
+#define byte2mask        65280      // 0x0000ff00
+#define byte2maskinv     4294902015 // 0xffff00ff
+#define byte3mask        16711680   // 0x00ff0000
+#define byte3maskinv     4278255615 // 0xff00ffff
+#define byte4mask        4278190080 // 0xff000000
+#define byte4maskinv     16777215   // 0x00ffffff
+
+#define ramaddress(x) (x)/wordalignment
 
 static unsigned int *ram;
 
 int initmemory(unsigned int size, char *memfilename) {
-    ram = (unsigned int *) calloc (size/wordalignment, sizeof(unsigned int)); // assuming size is passed as bytes.
+    ram = (unsigned int *) calloc (ramaddress(size), sizeof(unsigned int));
     if (ram == NULL) {
         printf("[ERROR] could not initialize memory of size %d", size);
         return (1);
@@ -70,7 +78,13 @@ int initmemory(unsigned int size, char *memfilename) {
             }
         }
 
-        ram[addressint/wordalignment] = valueint; // actually putting the value in ram
+        ram[ramaddress(addressint)] = valueint; // actually putting the value in ram
+    }
+
+    for (int i=0; i<ramaddress(size); i=i+4) {
+        if (ram[ramaddress(i)]) {
+            printf("%x : %x\n", i, ram[ramaddress(i)]);
+        }
     }
 
     fclose(memfile);
@@ -82,16 +96,9 @@ int memwrite32u(unsigned int address, unsigned int value) {
         printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
         return (1);
     }
-    ram[address] = value;
-    return (0);
-}
 
-int memwrite32(unsigned int address, int value) {
-    if (address % wordalignment) {
-        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
-        return (1);
-    }
-    ram[address] = (unsigned int) value;
+    // simple overwrite of element
+    ram[ramaddress(address)] = value;
     return (0);
 }
 
@@ -101,46 +108,60 @@ int memwrite16u(unsigned int address, unsigned int value) {
         return (1);
     }
 
-    if (address % wordalignment) {      // if address is word aligned, i.e. goes on lower half of the word
-        if (value & halfwordhighmask) { // and there are bits in the upper half of word "value"
-            printf("[ERROR] value is more than lower half of address can handle, (%s, %x, %x)", __func__, value, address);
-            return(2);
-        }
-
-        ram[address] = value;
-
-    } else {                            // if address is not word aligned, i.e. goes on upper half of the word
-        if (value & halfwordlowmask) {  // and there are bits in the lower half of word "value"
-            printf("[ERROR] value is more than higher half of address can handle, (%s, %x, %x)", __func__, value, address);
-            return(2);
-        }
-
-        ram[address] = value << halfword;
+    if (value != halfwordlowmask & value) {
+        printf("[ERROR] value is more than 2 bytes, (%s, %x)", __func__, value);
+        return(2);
     }
+
+    // clearing 16-bits
+    ram[ramaddress(address)] = ram[ramaddress(address)] & (halfwordlowmask << halfword*(address % wordalignment));
+    // setting 16-bits according to value
+    ram[ramaddress(address)] = ram[ramaddress(address)] | (value << halfword*(address % wordalignment));
+
     return 0;
 }
 
-int memwrite16(unsigned int address, int value) {
-    if (address % halfwordalignment) {
-        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
+int memwrite8u(unsigned int address, unsigned int value) {
+    if (value != value & byte1mask) {
+        printf("[ERROR] value cannot be stored in 1 byte, (%s, %x)", __func__, value);
+        return(2);
+    }
+
+    // clearing 8-bits
+    ram[ramaddress(address)] = ram[ramaddress(address)] & (byte1maskinv << byte*(address % wordalignment));
+    // setting 8-bits according to value
+    ram[ramaddress(address)] = ram[ramaddress(address)] | (value << byte*(address % wordalignment));
+
+    return (0);
+}
+
+int memread32u(unsigned int address, unsigned int *value) {
+    if (address % wordalignment) {
+        printf("[ERROR] misaligned word access by %s at address %x", __func__, address);
         return (1);
     }
 
-    if (address % wordalignment) {      // if address is word aligned, i.e. goes on lower half of the word
-        if (value & halfwordhighmask) { // and there are bits in the upper half of word "value"
-            printf("[ERROR] value is more than lower half of address can handle, (%s, %x, %x)", __func__, value, address);
-            return(2);
-        }
+    // simple word dump
+    *value = ram[ramaddress(address)];
+    return (0);
+}
 
-        ram[address] = (unsigned int) value;
-
-    } else {                            // if address is not word aligned, i.e. goes on upper half of the word
-        if (value & halfwordlowmask) {  // and there are bits in the lower half of word "value"
-            printf("[ERROR] value is more than higher half of address can handle, (%s, %x, %x)", __func__, value, address);
-            return(2);
-        }
-
-        ram[address] = (unsigned int)value << halfword;
+int memread16u(unsigned int address, unsigned int *value) {
+    if (address % halfwordalignment) {
+        printf("[ERROR] misaligned half-word access by %s at address %x", __func__, address);
+        return (1);
     }
-    return 0;
+
+    if (address % wordalignment) {
+        *value = (ram[ramaddress(address)] & halfwordhighmask) >> halfword;
+    } else {
+        *value = ram[ramaddress(address)] & halfwordlowmask;
+    }
+    return (1);
+}
+
+int memread8u(unsigned int address, unsigned int *value) {
+    *value = (ram[ramaddress(address)] & (byte1mask << (byte * (address % wordalignment)))) // get 8-bits
+              >> (byte * (address % wordalignment)); // shift to correct it's value
+    return (1);
 }
