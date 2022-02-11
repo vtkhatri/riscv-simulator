@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
+#include <errno.h>
 
 #include "rsim.h"
+#include "mem.c"
 
 void stripextension(char *filename) {
     char *end = filename + strlen(filename);
@@ -50,18 +52,38 @@ int main(int argc, char** argv) {
             printf("[ERROR] could not open file %s, quitting.\n", argv[1]);
             return(1);
         }
-        programcounter = (int) strtol(argv[2], NULL, 16); // in hex because we get it from dumping .o files
+        programcounter = (unsigned int) strtoul(argv[2], NULL, 16); // in hex because we get it from dumping .o files
+        if (programcounter == 0) {
+            if (errno == EINVAL) {
+                printf("[ERROR] invalid input %s", programcounter);
+                return (1);
+            }
+            if (errno == ERANGE) {
+                printf("[ERROR] program counter too big %s", programcounter);
+                return (1);
+            }
+        }
     } else {
         memfile = fopen(argv[1], "r");
         if (memfile == NULL) {
             printf("[ERROR] could not open file %s, quitting.\n", argv[1]);
             return(1);
         }
-        programcounter = (int) strtol(argv[2], NULL, 16); // in hex because we get it from dumping .o files
-        stackaddress = atoi(argv[3]);
+        programcounter = (unsigned int) strtoul (argv[2], NULL, 16); // in hex because we get it from dumping .o files
+        if (programcounter == 0) {
+            if (errno == EINVAL) {
+                printf("[ERROR] invalid input %s", programcounter);
+                return (1);
+            }
+            if (errno == ERANGE) {
+                printf("[ERROR] value too big %s", programcounter);
+                return (1);
+            }
+        }
+        stackaddress = (unsigned int) strtoul (argv[3], NULL, 10); // in hex because we get it from dumping .o files
         if (stackaddress == 0) {
-            printf("[ERROR] invalid stack address 0, quitting.\n");
-            return(1);
+            printf("[ERROR] invalid stack address 0, quitting.");
+            return (1);
         }
     }
 
@@ -79,5 +101,10 @@ int main(int argc, char** argv) {
 
     fprintf(logfile, "memory file = %s\nprogram counter = %d\nstack address = %d\n", memfilename, programcounter, stackaddress);
 
+    int retval = initmemory(stackaddress, memfilename);
+    if (retval) return(retval);
+
+
+    fclose(logfile);
     return(0);
 }
