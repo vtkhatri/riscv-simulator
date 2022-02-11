@@ -6,10 +6,24 @@
 
 #include "mem.h"
 
+#define word     32
+#define halfword 16
+#define byte     8
+
+#define wordalignment     4
+#define halfwordalignment 2
+
+#define halfwordlowmask  65535
+#define halfwordhighmask 4294901760
+#define byte1mask        255
+#define byte2mask        65280
+#define byte3mask        16711680
+#define byte4mask        4278190080
+
 static unsigned int *ram;
 
 int initmemory(unsigned int size, char *memfilename) {
-    ram = (unsigned int *) malloc (size); // assuming size is passed as bytes.
+    ram = (unsigned int *) calloc (size/wordalignment, sizeof(unsigned int)); // assuming size is passed as bytes.
     if (ram == NULL) {
         printf("[ERROR] could not initialize memory of size %d", size);
         return (1);
@@ -26,7 +40,7 @@ int initmemory(unsigned int size, char *memfilename) {
 
     while (fscanf(memfile, "%s %[^\n]s", address, value) != EOF) {
         char *end = address + strlen(address) - 1;
-        if (*end == ':') *end = '\0';
+        if (*end == ':') *end = '\0'; // stripping away the colon from address field
         else {
             printf("[ERROR] address scanned (%s) does not have a colon, misformatted mem file %s", address, memfilename);
             return (3);
@@ -56,10 +70,77 @@ int initmemory(unsigned int size, char *memfilename) {
             }
         }
 
-        printf("%s=%d %s=%d\n", address, addressint, value, valueint);
-        ram[addressint] = valueint;
+        ram[addressint/wordalignment] = valueint; // actually putting the value in ram
     }
 
     fclose(memfile);
     return (0);
+}
+
+int memwrite32u(unsigned int address, unsigned int value) {
+    if (address % wordalignment) {
+        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
+        return (1);
+    }
+    ram[address] = value;
+    return (0);
+}
+
+int memwrite32(unsigned int address, int value) {
+    if (address % wordalignment) {
+        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
+        return (1);
+    }
+    ram[address] = (unsigned int) value;
+    return (0);
+}
+
+int memwrite16u(unsigned int address, unsigned int value) {
+    if (address % halfwordalignment) {
+        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
+        return (1);
+    }
+
+    if (address % wordalignment) {      // if address is word aligned, i.e. goes on lower half of the word
+        if (value & halfwordhighmask) { // and there are bits in the upper half of word "value"
+            printf("[ERROR] value is more than lower half of address can handle, (%s, %x, %x)", __func__, value, address);
+            return(2);
+        }
+
+        ram[address] = value;
+
+    } else {                            // if address is not word aligned, i.e. goes on upper half of the word
+        if (value & halfwordlowmask) {  // and there are bits in the lower half of word "value"
+            printf("[ERROR] value is more than higher half of address can handle, (%s, %x, %x)", __func__, value, address);
+            return(2);
+        }
+
+        ram[address] = value << halfword;
+    }
+    return 0;
+}
+
+int memwrite16(unsigned int address, int value) {
+    if (address % halfwordalignment) {
+        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
+        return (1);
+    }
+
+    if (address % wordalignment) {      // if address is word aligned, i.e. goes on lower half of the word
+        if (value & halfwordhighmask) { // and there are bits in the upper half of word "value"
+            printf("[ERROR] value is more than lower half of address can handle, (%s, %x, %x)", __func__, value, address);
+            return(2);
+        }
+
+        ram[address] = (unsigned int) value;
+
+    } else {                            // if address is not word aligned, i.e. goes on upper half of the word
+        if (value & halfwordlowmask) {  // and there are bits in the lower half of word "value"
+            printf("[ERROR] value is more than higher half of address can handle, (%s, %x, %x)", __func__, value, address);
+            return(2);
+        }
+
+        ram[address] = (unsigned int)value << halfword;
+    }
+    return 0;
 }

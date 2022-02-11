@@ -55,11 +55,11 @@ int main(int argc, char** argv) {
         programcounter = (unsigned int) strtoul(argv[2], NULL, 16); // in hex because we get it from dumping .o files
         if (programcounter == 0) {
             if (errno == EINVAL) {
-                printf("[ERROR] invalid input %s", programcounter);
+                printf("[ERROR] invalid input %s", argv[2]);
                 return (1);
             }
             if (errno == ERANGE) {
-                printf("[ERROR] program counter too big %s", programcounter);
+                printf("[ERROR] program counter too big %s", argv[2]);
                 return (1);
             }
         }
@@ -72,11 +72,11 @@ int main(int argc, char** argv) {
         programcounter = (unsigned int) strtoul (argv[2], NULL, 16); // in hex because we get it from dumping .o files
         if (programcounter == 0) {
             if (errno == EINVAL) {
-                printf("[ERROR] invalid input %s", programcounter);
+                printf("[ERROR] invalid input %s", argv[2]);
                 return (1);
             }
             if (errno == ERANGE) {
-                printf("[ERROR] value too big %s", programcounter);
+                printf("[ERROR] value too big %s", argv[2]);
                 return (1);
             }
         }
@@ -99,8 +99,10 @@ int main(int argc, char** argv) {
         return(1);
     }
 
+    // distinct prints to logfile to check if everything is working.
     fprintf(logfile, "memory file = %s\nprogram counter = %d\nstack address = %d\n", memfilename, programcounter, stackaddress);
 
+    // initializing memory
     int retval = initmemory(stackaddress, memfilename);
     if (retval) return(retval);
 
