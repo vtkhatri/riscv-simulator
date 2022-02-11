@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
             printf("[ERROR] could not open file %s, quitting.\n", argv[1]);
             return(1);
         }
-        programcounter = atoi(argv[2]);
+        programcounter = (int) strtol(argv[2], NULL, 16);
         if (programcounter == 0) {
             // printf("[INFO] program counter = 0,"); // TODO : should we print this? def value is 0.
         }
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
             printf("[ERROR] could not open file %s, quitting.\n", argv[1]);
             return(1);
         }
-        programcounter = atoi(argv[2]);
+        programcounter = (int) strtol(argv[2], NULL, 16);
         if (programcounter == 0) {
             // printf("[INFO] program counter = 0,"); // TODO : should we print this? def value is 0.
         }
@@ -85,7 +85,5 @@ int main(int argc, char** argv) {
 
     fprintf(logfile, "memory file = %s\nprogram counter = %d\nstack address = %d\n", memfilename, programcounter, stackaddress);
 
-    free(memfilename);
-    free(logfilename);
     return(0);
 }

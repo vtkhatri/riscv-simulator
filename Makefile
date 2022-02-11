@@ -10,6 +10,7 @@ ASSS := $(CASSS) $(ASSSS)
 OBJS := $(ASSS:s=o)
 MEMS := $(ASSS:s=mem)
 LOGS := $(ASSS:s=log)
+PCS := $(ASSS:s=pc)
 
 PROGRAMCOUNTER := 0
 STACKADDRESS := 65535
@@ -27,6 +28,7 @@ RVGCC := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux
 RVAS := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux-gnu-as
 
 GREPCLEAN := grep -o '^[[:blank:]]*[[:xdigit:]]*:[[:blank:]][[:xdigit:]]*'
+GETPC := awk '/<main>:/ {print $$1}'
 
 EXEC := ./rsim # Risc-v SIMulator -> rsim
 CCARGS := -g
@@ -38,17 +40,17 @@ endif
 all: build testfiles test
 
 clean:
-	rm -f $(EXEC) $(OBJS) $(MEMS) $(CASSS) $(LOGS)
+	rm -f $(EXEC) $(OBJS) $(MEMS) $(CASSS) $(LOGS) $(PCS)
 
 build:
 	$(CC) $(CCARGS) $(SRCS) -o $(EXEC)
 
 test: $(LOGS)
 
-%.log: %.mem
-	$(EXEC) $< $(PROGRAMCOUNTER) $(STACKADDRESS)
+%.log: %.mem %.pc
+	$(EXEC) $< $$(cat $(filter-out $<,$^)) $(STACKADDRESS)
 
-testfiles: $(ASSS) $(OBJS) $(MEMS)
+testfiles: $(ASSS) $(OBJS) $(MEMS) $(PCS)
 
 %.s: %.c
 	$(RVGCC) -S -fpic -march=rv32i -mabi=ilp32 $< -o $@
@@ -58,3 +60,6 @@ testfiles: $(ASSS) $(OBJS) $(MEMS)
 
 %.mem: %.o
 	$(RVOBJDUMP) -d $< | $(GREPCLEAN) > $@
+
+%.pc: %.o
+	$(RVOBJDUMP) -d $< | $(GETPC) > $@

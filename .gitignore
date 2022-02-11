@@ -4,3 +4,4 @@ testcases/c/*.s
 testcases/*/*.o
 testcases/*/*.mem
 testcases/*/*.log
+testcases/*/*.pc
