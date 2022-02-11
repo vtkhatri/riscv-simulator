@@ -47,7 +47,7 @@ build:
 
 test: $(LOGS)
 
-%.log: %.mem %.pc
+%.log: %.mem %.pc # get just .pc files from pre-reqs, then cat out it's contents (actual PC in hex)
 	$(EXEC) $< $$(cat $(filter-out $<,$^)) $(STACKADDRESS)
 
 testfiles: $(ASSS) $(OBJS) $(MEMS) $(PCS)
@@ -61,5 +61,5 @@ testfiles: $(ASSS) $(OBJS) $(MEMS) $(PCS)
 %.mem: %.o
 	$(RVOBJDUMP) -d $< | $(GREPCLEAN) > $@
 
-%.pc: %.o
+%.pc: %.o # store pc values from rvobjdump in %.pc files
 	$(RVOBJDUMP) -d $< | $(GETPC) > $@

@@ -18,7 +18,7 @@ void stripextension(char *filename) {
 }
 
 void printUsage() {
-    printf("Usage -\n  ./rsim <path to memory image file> <starting address> <stack address>\n");
+    printf("Usage -\n  ./rsim <path to memory image file> <starting address in hex> <stack address>\n");
     return;
 }
 
@@ -50,20 +50,14 @@ int main(int argc, char** argv) {
             printf("[ERROR] could not open file %s, quitting.\n", argv[1]);
             return(1);
         }
-        programcounter = (int) strtol(argv[2], NULL, 16);
-        if (programcounter == 0) {
-            // printf("[INFO] program counter = 0,"); // TODO : should we print this? def value is 0.
-        }
+        programcounter = (int) strtol(argv[2], NULL, 16); // in hex because we get it from dumping .o files
     } else {
         memfile = fopen(argv[1], "r");
         if (memfile == NULL) {
             printf("[ERROR] could not open file %s, quitting.\n", argv[1]);
             return(1);
         }
-        programcounter = (int) strtol(argv[2], NULL, 16);
-        if (programcounter == 0) {
-            // printf("[INFO] program counter = 0,"); // TODO : should we print this? def value is 0.
-        }
+        programcounter = (int) strtol(argv[2], NULL, 16); // in hex because we get it from dumping .o files
         stackaddress = atoi(argv[3]);
         if (stackaddress == 0) {
             printf("[ERROR] invalid stack address 0, quitting.\n");
