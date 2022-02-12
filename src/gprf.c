@@ -1,0 +1,1 @@
+unsigned int x[32]; // maybe use macro instead of 32, maybe looks better
