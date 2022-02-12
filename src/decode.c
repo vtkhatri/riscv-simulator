@@ -4,19 +4,10 @@
 #include "instmasks.h"
 #include "rsim.h"
 
-#define funct3mask 7 << 12 // 111 00000 0000000
-                           //  f3   rd   opcode
-#define funct7mask 127 << 25 // fe 00 00 00 00
-
 #define check(x,y) ((x) & (y)) == (y)
 
-unsigned int getfunct3(unsigned int instruction) {
-    return ((instruction & funct3mask)>> 12);
-}
-
-unsigned int getfunct7(unsigned int instruction) {
-    return ((instruction & funct7mask)>> 25);
-}
+#define getfunct3(x) ((x) & (7 << 12)) >> 12
+#define getfunct7(x) ((x) & (127 << 25)) >> 25
 
 int decodeandcall(unsigned int instruction) {
     if (check(instruction, registerimmediatemask)) {
