@@ -1,71 +1,59 @@
 /* Integer register-immediate instructions*/
-/* TODO : identify what values to check to classify instruction as register immediate alu inst */
+#define luimask   55 // 0110111
+#define auipcmask 23 // 0010111
 
-ADDI  /*Add immediate*/
-SLTIU /*Set less than immediate unsigned*/
-SLTI  /* Set less than immediate*/
-ANDI /*Bitwise AND immediate*/
-ORI /*Bitwise OR immediate*/
-XORI /*Bitwise XOR immediate*/
-SLLI /*logical left shift immediate*/
-SRLI /*Logical right shift immediate*/
-SRAI /*Artihmetic right shift*/
-LUI /*Load Upper Immediate*/
-AUIPC /*Add upper immediate to program counter*/
+#define registerimmediatemask 19 // 0010011
+
+#define funct3add          0 // 000
+#define funct3shiftleftl   1 // 001
+#define funct3setlessthan  2 // 010
+#define funct3setlessthanu 3 // 011
+#define funct3xor          4 // 100
+#define funct3shiftrightl  5 // 101
+#define funct3or           6 // 110
+#define funct3and          7 // 111
+
+#define funct7shiftrightl  0  // 0000000
+#define funct7shiftrighta  32 // 0100000
+
+// nop is encoded as addi x0, x0, 0 - 000000000000 00000 000 00000 0010011 = 19
+#define nopmask 19
 
 /* Integer register register operations*/
-/* TODO : identify what values to check to classify instruction as register register alu inst */
+#define registerregistermask 51 // 0110011
 
-ADD /*Addition reg-reg*/
-SLT /*set less than*/
-SLTU /*set less than unsigned*/
-AND /*bitwise and*/
-OR /*bitwise or*/
-XOR /*bitwise xor*/
-SLL /*logical left shift*/
-SRL /*logical right shift*/
-SRA /*arithmetic right shift*/
-SUB /*Subtraction*/
-
-NOP /*encoded as ADDI x0,x0,0*/
+// all funct3 masks and funct7 masks same as register immediate
 
 /*Control transfer instructions*/
 
 /*Uncondtional jumps*/
-
-JAL /*Jump and Link*/
-JALR /*Jump and link register*/
+#define jalmask  111 // 1101111
+#define jalrmask 103 // 1100111
 
 /*Conditional branches*/
-/* TODO : identify what values to check to classify instruction as branch instructions */
+#define branchmask 99 // 1100011
 
-BEQ /*branch if equal*/
-BNE /*branch if not equal*/
-BLTU /*branch if less than unsigned*/
-BLT /*branch if less than signed*/
-BGEU /* branch if greater than or equal to unsigned*/
-BGE /* branch if greater than or equal to signed*/
-BGT /*branch if greater than signed*/
-BGTU /*branch if greater than unsigned*/
-BLE /*branch if less than or equal to signed*/
-BLEU /*branch if less than or equal to unsigned*/
+#define funct3equal         0 // 000
+#define funct3notequal      1 // 001
+#define funct3lessthan      4 // 100
+#define funct3greaterequal  5 // 101
+#define funct3lessthanu     6 // 110
+#define funct3greaterequalu 7 // 111
 
 /*Load and store instructions*/
-/* TODO : identify what values to check to classify instruction as load/store mem instructions */
 
-LW /*load 32 bit value from memory to register*/
-LH /*loads 16 bit value from memory, sign extends to 32 bits and store to register*/
-LHU /*loads 16 bit value from memory, zero extends to 32 bits and store to register*/
-LB /*loads 8 bit value from memory, sign extend to 32 bits and store to register*/
-LBU /*loads 8 bit value from memory, zero extends to 32 bits and store to register*/
-SW /*store 32 bit from register to memory*/
-SH /*store low 16 bit value from register to memory*/
-SB /*store low 8 bit value from register to memory*/
+#define loadmask  3  // 0000011
+#define storemask 35 // 0100011
+
+#define funct3byte      0 // 000
+#define funct3halfword  1 // 001
+#define funct3word      2 // 010
+#define funct3byteu     4 // 100
+#define funct3halfwordu 5 // 101
 
 /*Environment call and break point*/
-/* TODO : abhi nahi, baadme dekhenge */
 
-ECALL/*used to make service request to execution environment*/
-EBREAK/*used to return control to debugging environment*/
+#define ecallmask  115     // 0................ 1110011
+#define ebreakmask 1048691 // 1 00000 000 00000 1110011
 
 
