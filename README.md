@@ -1,7 +1,9 @@
-# RISC-V ISA Simulator
-Repository for ECE-586 Winter-2022 Final Term Project
+# riscv-simulator
+simulating rv32i instruction set
 
-### make .mem files from .c files in testcases/ directory
-```
-make testfiles
-```
+### make modifiers
+
+to extend make's search range -
+* for assembly files - `ASSSDIRS=<path>`
+* for testcases (.c+.s) - `TESTDIRS=<path>`
+* for mem files - `MEMDIRS=<path>`
