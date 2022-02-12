@@ -83,9 +83,10 @@ int initmemory(unsigned int size, char *memfilename) {
     }
 
     // temporary testing
-    for (int i=0; i<ramaddress(size); i=i+4) {
+    int retval;
+    for (int i=0; i<ramaddress(size) && retval == 0; i=i+4) {
         if (ram[ramaddress(i)]) {
-            decodeandcall(ram[ramaddress(i)]);
+            retval = decodeandcall(ram[ramaddress(i)]);
         }
     }
 

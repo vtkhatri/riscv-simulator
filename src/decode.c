@@ -4,7 +4,7 @@
 #include "instmasks.h"
 #include "rsim.h"
 
-#define check(x,y) ((x) & (y)) == (y)
+#define check(x,y) ((x) & 127) == (y)
 
 #define getfunct3(x) ((x) & (7 << 12)) >> 12
 #define getfunct7(x) ((x) & (127 << 25)) >> 25
@@ -24,6 +24,13 @@ int decodeandcall(unsigned int instruction) {
         fprintf(logfile, "%x - load\n", instruction);
     } else if (check(instruction, storemask)) {
         fprintf(logfile, "%x - store\n", instruction);
+    } else if (check(instruction, luimask)) {
+        fprintf(logfile, "%x - lui\n", instruction);
+    } else if (check(instruction, auipcmask)) {
+        fprintf(logfile, "%x - auipc / call\n", instruction);
+    } else {
+        printf("[ERROR] could not classify instruction %x\n", instruction);
+        return(1);
     }
     return (0);
 }
