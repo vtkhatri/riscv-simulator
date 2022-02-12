@@ -29,6 +29,7 @@
 #define ramaddress(x) (x)/wordalignment
 
 static unsigned int *ram;
+extern int decodeandcall(unsigned int instruction);
 
 int initmemory(unsigned int size, char *memfilename) {
     ram = (unsigned int *) calloc (ramaddress(size), sizeof(unsigned int));
@@ -81,9 +82,10 @@ int initmemory(unsigned int size, char *memfilename) {
         ram[ramaddress(addressint)] = valueint; // actually putting the value in ram
     }
 
+    // temporary testing
     for (int i=0; i<ramaddress(size); i=i+4) {
         if (ram[ramaddress(i)]) {
-            printf("%x : %x\n", i, ram[ramaddress(i)]);
+            decodeandcall(ram[ramaddress(i)]);
         }
     }
 

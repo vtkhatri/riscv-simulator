@@ -6,6 +6,7 @@
 
 #include "rsim.h"
 #include "mem.c"
+#include "decode.c"
 
 void stripextension(char *filename) {
     char *end = filename + strlen(filename);
