@@ -34,16 +34,16 @@ extern int decodeandcall(unsigned int instruction);
 extern FILE *logfile;
 
 int initmemory(unsigned int size, char *memfilename) {
+
+    errno = 0;
     ram = (unsigned int *) calloc (ramaddress(size), sizeof(unsigned int));
     if (ram == NULL) {
-        printf("[ERROR] could not initialize memory of size %d", size);
-        return (1);
+        return ENOMEM;
     }
 
     FILE *memfile = fopen(memfilename, "r");
     if (memfile == NULL) {
-        printf("[ERROR] could not open memfile");
-        return (2);
+        return ENOENT;
     }
 
     char *address = (char *) malloc (5); // 64k address space, should be represented by 16-bits = 4 hex characters + 1 colon
@@ -53,32 +53,19 @@ int initmemory(unsigned int size, char *memfilename) {
         char *end = address + strlen(address) - 1;
         if (*end == ':') *end = '\0'; // stripping away the colon from address field
         else {
-            printf("[ERROR] address scanned (%s) does not have a colon, misformatted mem file %s", address, memfilename);
-            return (3);
+            return EINVAL;
         }
 
         unsigned int addressint = (unsigned int) strtoul (address, NULL, 16);
-        if (addressint == 0) {
-            if (errno == EINVAL) {
-                printf("[ERROR] invalid input %s", address);
-                return (4);
-            }
-            if (errno == ERANGE) {
-                printf("[ERROR] address too big %s", address);
-                return (4);
-            }
+        if (addressint == 0 && errno != 0) {
+            printf("[ERROR] %s - can't convert address (%s) to int\n", __func__, address);
+            return errno;
         }
 
         unsigned int valueint = (unsigned int) strtoul (value, NULL, 16);
-        if (valueint == 0) {
-            if (errno == EINVAL) {
-                printf("[ERROR] invalid input %s", address);
-                return (4);
-            }
-            if (errno == ERANGE) {
-                printf("[ERROR] value too big %s", value);
-                return (4);
-            }
+        if (valueint == 0 && errno != 0) {
+            printf("[ERROR] %s - can't convert value (%s) to int\n", __func__, value);
+            return errno;
         }
 
         ram[ramaddress(addressint)] = valueint; // actually putting the value in ram
@@ -93,29 +80,27 @@ int initmemory(unsigned int size, char *memfilename) {
     }
 
     fclose(memfile);
-    return (0);
+    return 0;
 }
 
 int memwrite32u(unsigned int address, unsigned int value) {
     if (address % wordalignment) {
-        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
-        return (1);
+        return EINVAL;
     }
 
     // simple overwrite of element
     ram[ramaddress(address)] = value;
-    return (0);
+    return 0;
 }
 
 int memwrite16u(unsigned int address, unsigned int value) {
     if (address % halfwordalignment) {
         printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
-        return (1);
+        return EINVAL;
     }
 
     if (value != halfwordlowmask & value) {
-        printf("[ERROR] value is more than 2 bytes, (%s, %x)", __func__, value);
-        return(2);
+        return ERANGE;
     }
 
     // clearing 16-bits
@@ -128,8 +113,7 @@ int memwrite16u(unsigned int address, unsigned int value) {
 
 int memwrite8u(unsigned int address, unsigned int value) {
     if (value != value & byte1mask) {
-        printf("[ERROR] value cannot be stored in 1 byte, (%s, %x)", __func__, value);
-        return(2);
+        return ERANGE;
     }
 
     // clearing 8-bits
@@ -137,36 +121,33 @@ int memwrite8u(unsigned int address, unsigned int value) {
     // setting 8-bits according to value
     ram[ramaddress(address)] = ram[ramaddress(address)] | (value << byte*(address % wordalignment));
 
-    return (0);
+    return 0;
 }
 
-int memread32u(unsigned int address, unsigned int *value) {
+unsigned int memread32u(unsigned int address) {
     if (address % wordalignment) {
-        printf("[ERROR] misaligned word access by %s at address %x", __func__, address);
-        return (1);
+        errno = EINVAL;
+        return 0;
     }
 
     // simple word dump
-    *value = ram[ramaddress(address)];
-    return (0);
+    return ram[ramaddress(address)];
 }
 
-int memread16u(unsigned int address, unsigned int *value) {
+unsigned int memread16u(unsigned int address) {
     if (address % halfwordalignment) {
-        printf("[ERROR] misaligned half-word access by %s at address %x", __func__, address);
-        return (1);
+        errno = EINVAL;
+        return 0;
     }
 
     if (address % wordalignment) {
-        *value = (ram[ramaddress(address)] & halfwordhighmask) >> halfword;
+        return (ram[ramaddress(address)] & halfwordhighmask) >> halfword;
     } else {
-        *value = ram[ramaddress(address)] & halfwordlowmask;
+        return ram[ramaddress(address)] & halfwordlowmask;
     }
-    return (1);
 }
 
-int memread8u(unsigned int address, unsigned int *value) {
-    *value = (ram[ramaddress(address)] & (byte1mask << (byte * (address % wordalignment)))) // get 8-bits
+unsigned int memread8u(unsigned int address) {
+    return (ram[ramaddress(address)] & (byte1mask << (byte * (address % wordalignment)))) // get 8-bits
               >> (byte * (address % wordalignment)); // shift to correct it's value
-    return (1);
 }

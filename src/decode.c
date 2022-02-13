@@ -31,8 +31,7 @@ int decodeandcall(unsigned int instruction) {
     } else if (check(instruction, auipcmask)) {
         fprintf(logfile, "%x - auipc / call\n", instruction);
     } else {
-        printf("[ERROR] could not classify instruction %x\n", instruction);
-        return(1);
+        return EINVAL;
     }
-    return (0);
+    return 0;
 }

@@ -15,30 +15,38 @@ int initgprf(unsigned int programcounter, unsigned int stackaddress) {
     pc = programcounter;
     x[sp] = stackaddress;
     x[zero] = 0;
-    return(0);
+
+    return 0;
 }
 
-int gprread(gprfindex index, unsigned int *value) {
-    *value = x[index];
-    return (0);
+unsigned int gprread(gprfindex index) {
+    if (index > 31) {
+        errno = ERANGE;
+        return 0;
+    }
+    return x[index];
 }
 
 int gprfwrite(gprfindex index, unsigned int value) {
     if (index == zero) {
-        printf("[ERROR] writing to zero register\n");
-        return (1);
+        return EINVAL;
+    }
+    if (index > 31) {
+        return ERANGE;
     }
 
     x[index] = value;
-    return (0);
+    return 0;
 }
 
 int printgprf() {
     fprintf(logfile, "pc - %d\n", pc);
     for (int i=zero; i<=t6; i++) {
-        int gprval;
-        gprread(i, &gprval);
-        fprintf(logfile, "%s - %x\n", gprfnames[i], gprval);
+        fprintf(logfile, "%s - %x\n", gprfnames[i], gprread(i));
+        if (errno != 0) {
+            fprintf(logfile, "[ERROR] apocalypitic error occured, out of range with using enum - %s", __func__);
+            return EINVAL;
+        }
     }
-    return (0);
+    return 0;
 }

@@ -20,6 +20,7 @@ typedef enum {
     s2,
     s3,
     s4,
+    s5,
     s6,
     s7,
     s8,
@@ -66,11 +67,11 @@ const char *gprfnames[] = {
     "t6"
 };
 
-int gprread(gprfindex index, unsigned int *value);
-int gprwrite(gprfindex index, unsigned int *value);
+unsigned int gprread(gprfindex);
+int gprwrite(gprfindex, unsigned int);
 int printgprf();
 
-int gprlui(gprfindex index, unsigned int *value);
-int auipc(unsigned int *value);
+// int gprlui(gprfindex);
+// unsigned int auipc();
 
-int initpc(unsigned int pc, unsigned int sp);
+int initgprf(unsigned int pc, unsigned int sp);
