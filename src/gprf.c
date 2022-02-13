@@ -6,6 +6,8 @@
 
 #include "gprf.h"
 
+extern FILE *logfile;
+
 static unsigned int x[32];
 static unsigned int pc;
 

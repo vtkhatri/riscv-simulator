@@ -9,6 +9,8 @@
 #define getfunct3(x) ((x) & (7 << 12)) >> 12
 #define getfunct7(x) ((x) & (127 << 25)) >> 25
 
+extern FILE *logfile;
+
 int decodeandcall(unsigned int instruction) {
     if (check(instruction, registerimmediatemask)) {
         fprintf(logfile, "%x - register immediate\n", instruction);

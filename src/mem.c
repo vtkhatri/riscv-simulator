@@ -31,6 +31,8 @@
 static unsigned int *ram;
 extern int decodeandcall(unsigned int instruction);
 
+extern FILE *logfile;
+
 int initmemory(unsigned int size, char *memfilename) {
     ram = (unsigned int *) calloc (ramaddress(size), sizeof(unsigned int));
     if (ram == NULL) {
