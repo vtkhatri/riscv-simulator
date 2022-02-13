@@ -7,6 +7,7 @@
 #include "rsim.h"
 #include "mem.c"
 #include "decode.c"
+#include "gprf.c"
 
 void stripextension(char *filename) {
     char *end = filename + strlen(filename);
@@ -105,6 +106,14 @@ int main(int argc, char** argv) {
 
     // initializing memory
     int retval = initmemory(stackaddress, memfilename);
+    if (retval) return(retval);
+
+    // initializing pc and gprf
+    retval = initgprf(programcounter, stackaddress);
+    if (retval) return(retval);
+
+    // showing off print gprf function
+    retval = printgprf();
     if (retval) return(retval);
 
 
