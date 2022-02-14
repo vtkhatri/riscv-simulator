@@ -14,6 +14,7 @@
 
 #define registerimmediatemask 19 // 0010011
 #define getregimmimm(x) ((x) & (4095 << 20)) >> 20 // inst[31:20] = imm[11:0]
+#define getshamtfromimm(x) (x) & 31 // imm[4:0] = shift amount
 
 #define funct3add          0 // 000
 #define funct3shiftleftl   1 // 001
@@ -34,11 +35,17 @@
 /* register register */
 #define registerregistermask 51 // 0110011
 
-// all funct3 masks and funct7 masks same as register immediate
+// all funct3 masks same as register immediate
+#define funct7add 0  // 0000000
+#define funct7sub 32 // 0100000
 
 /* control instructions */
 /* uncondtional jumps */
 #define jalmask  111 // 1101111
+#define getjalimm(x) (((x) & (1 << 31)) >> 11) \
+                   + (((x) & (1023 << 30)) >> 20) \
+                   + (((x) & (1 << 20)) >> 9) \
+                   + (((x) & (127 << 12))) // inst[31:12] = imm[20|10:1|11|19:12]
 
 #define jalrmask 103 // 1100111
 #define getjalrimm(x) ((x) & (4095 << 20)) >> 20 // inst[31:20] = imm[11:0]
