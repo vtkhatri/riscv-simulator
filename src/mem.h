@@ -27,7 +27,7 @@
 #define ramaddress(x) (x)/wordalignment
 
 extern int decodeandcall(unsigned int instruction);
-extern unsigned int gprfgetpc();
+extern unsigned int gprgetpc();
 
 extern FILE *logfile;
 

@@ -1,5 +1,9 @@
 #include "rsim.h"
 
+#include "mem.h"
+#include "decode.h"
+#include "gprf.h"
+
 void stripextension(char *filename) {
     char *end = filename + strlen(filename);
 
@@ -23,7 +27,7 @@ int mainloop() {
 
     do {
         retval = 0;
-        pc = gprfgetpc();
+        pc = gprgetpc();
         instruction = memread32u(pc);
 #ifdef debug
         fprintf(logfile, "[ALL] inst fetched from %08x -> %08x", pc, inst);

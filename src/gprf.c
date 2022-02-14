@@ -55,7 +55,7 @@ unsigned int gprread(gprfindex index) {
     return x[index];
 }
 
-int gprfwrite(gprfindex index, unsigned int value) {
+int gprwrite(gprfindex index, unsigned int value) {
     if (index == zero) {
         return EINVAL;
     }
@@ -79,11 +79,11 @@ int gprfprint() {
     return 0;
 }
 
-unsigned int gprfgetpc() {
+unsigned int gprgetpc() {
     return pc;
 }
 
-int gprfputpc(unsigned int progcount) {
+int gprputpc(unsigned int progcount) {
     pc = progcount;
     return 0;
 }

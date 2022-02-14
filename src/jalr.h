@@ -4,7 +4,4 @@
 #include <memory.h>
 #include <errno.h>
 
-extern FILE *logfile;
-
-extern int gprputpc(unsigned int);
-extern unsigned int gprgetpc();
+int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm);

@@ -4,10 +4,6 @@
 #include <memory.h>
 #include <errno.h>
 
-#include "mem.h"
-#include "decode.h"
-#include "gprf.h"
-
 FILE *logfile; // global logfile so that everything can dump to that file as required
 
 void stripextension(char *filename); // might be usefule somewhere else
