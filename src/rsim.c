@@ -1,13 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <memory.h>
-#include <errno.h>
-
 #include "rsim.h"
-#include "mem.c"
-#include "decode.c"
-#include "gprf.c"
 
 void stripextension(char *filename) {
     char *end = filename + strlen(filename);
@@ -24,6 +15,27 @@ void stripextension(char *filename) {
 void printUsage() {
     printf("Usage -\n  ./rsim <path to memory image file> <starting address in hex> <stack address>\n");
     return;
+}
+
+int mainloop() {
+    errno = 0;
+    unsigned int pc, retval, instruction;
+
+    do {
+        retval = 0;
+        pc = gprfgetpc();
+        instruction = memread32u(pc);
+#ifdef debug
+        fprintf(logfile, "[ALL] inst fetched from %08x -> %08x", pc, inst);
+#endif
+        retval = decodeandcall(instruction);
+        if (retval == ENOEXEC) {
+            fprintf(logfile, "[FIN] jr ra called with ra containing 0; pc = %08x\n", pc);
+            return 0;
+        }
+    } while (retval == 0);
+
+    return retval;
 }
 
 int main(int argc, char** argv) {
@@ -112,11 +124,12 @@ int main(int argc, char** argv) {
     retval = initgprf(programcounter, stackaddress);
     if (retval) return(retval);
 
-    // showing off print gprf function
-    retval = printgprf();
-    if (retval) return(retval);
-
+    retval = mainloop();
+    if (retval != 0) {
+        printf("[ERROR] mainloop returns non-zero retval.\n");
+    }
 
     fclose(logfile);
-    return(0);
+    return(retval);
 }
+

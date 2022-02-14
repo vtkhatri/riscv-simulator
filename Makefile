@@ -1,8 +1,8 @@
 .PHONY: all clean test testfiles memfiles build
 
 SRCDIRS := src
-# SRCS := $(shell find $(SRCDIRS) -name '*.c')
-SRCS := src/rsim.c
+SRCS := $(shell find $(SRCDIRS) -name '*.c')
+# SRCS := src/rsim.c
 TESTDIRS := testcases
 TESTS := $(shell find $(TESTDIRS) -name '*.c')
 CASSS := $(TESTS:c=s)

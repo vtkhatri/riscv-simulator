@@ -8,4 +8,4 @@ L1:
 	addi	t0, t0, -90
 L2:
 	addi	t0, t0, -2
-	j	ra
+	jr	ra
