@@ -6,11 +6,11 @@
 
 #define immfieldlength 12
 
-unsigned int signextendregisterimmediate(unsigned int value) {
-    int x, m;
+int signextendregisterimmediate(int value) {
+    int m;
     m = 1U << (immfieldlength - 1);
-    x = x & ((1U << immfieldlength) - 1);
-    return (x ^ m) - m;
+    value = value & ((1U << immfieldlength) - 1);
+    return (value ^ m) - m;
 }
 
 int registerimmediate(unsigned int rd, unsigned int rs1,
@@ -25,7 +25,7 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             gprwrite(rd, gprread(rs1) << imm);
             break;
         case funct3setlessthan:
-            if ((int)gprread(rs1) < (int)signextendregisterimmediate(imm)) {
+            if ((int)gprread(rs1) < (int)signextendregisterimmediate((int)imm)) {
                 gprwrite(rd, 1);
             } else {
                 gprwrite(rd, 0);
