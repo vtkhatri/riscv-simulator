@@ -40,3 +40,7 @@ unsigned int memread16u(unsigned int address);
 unsigned int memread8u(unsigned int address);
 
 int initmemory(unsigned int size, char *memfilename);
+
+int load(unsigned int rd, unsigned int rs1, unsigned int funct3, unsigned int ldimm);
+
+int store(unsigned int rs1, unsigned int rs2, unsigned int funct3, unsigned int stimm);

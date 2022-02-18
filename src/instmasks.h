@@ -71,6 +71,10 @@
 #define loadmask  3  // 0000011
 #define storemask 35 // 0100011
 
+#define getloadimm(x) ((x) & (4095 << 20)) >> 20 // inst[31:20] = imm[11:0]
+#define getstoreimm(x) (((x) & (127 << 25)) >> 20) \
+                     + (((x) & (31 << 7)) >> 7)// inst[31:25|11:7] = imm[11:5|4:0]
+
 #define funct3byte      0 // 000
 #define funct3halfword  1 // 001
 #define funct3word      2 // 010

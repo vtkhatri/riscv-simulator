@@ -68,12 +68,26 @@ int decodeandcall(unsigned int instruction) {
         retval = branch(rs1, rs2, funct3, brimm);
 
     } else if (check(instruction, loadmask)) {
-        fprintf(logfile, "%08x - load\n", instruction);
+        unsigned int
+            rd = getrd(instruction),
+            rs1 = getrs1(instruction),
+            funct3 = getfunct3(instruction),
+            loadimm = getloadimm(instruction);
+        
+        fprintf(logfile, "[LOAD] %08x : rd %d, rs1 %d(%08x), funct3 %d, imm %08x\n", instruction, rd, rs1, gprread(rs1), funct3, loadimm);
+        retval = load(rd, rs1, funct3, loadimm);
 
         gprnextpc();
 
     } else if (check(instruction, storemask)) {
-        fprintf(logfile, "%08x - store\n", instruction);
+        unsigned int
+            rs1 = getrs1(instruction),
+            rs2 = getrs2(instruction),
+            funct3 = getfunct3(instruction),
+            storeimm = getstoreimm(instruction);
+        
+        fprintf(logfile, "[STORE] %08x : rs1 %d(%08x), rs2 %d(%08x), funct3 %d, imm %08x\n", instruction, rs1, gprread(rs1), rs2, gprread(rs2), funct3, storeimm);
+        retval = store(rs1, rs2, funct3, storeimm);
 
         gprnextpc();
 
