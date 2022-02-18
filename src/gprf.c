@@ -87,3 +87,8 @@ int gprputpc(unsigned int progcount) {
     pc = progcount;
     return 0;
 }
+
+int gprnextpc() {
+    pc = pc + 4;
+    return 0;
+}

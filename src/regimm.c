@@ -55,7 +55,7 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             gprwrite(rd, gprread(rs1) | imm);
             break;
         case funct3and:
-            gprwrite(rd, gprread(rs1) | imm);
+            gprwrite(rd, gprread(rs1) & imm);
             break;
         default:
             fprintf(logfile, "[ERROR] %s - funct3 (%x) does not match anything\n", __func__, funct3);
