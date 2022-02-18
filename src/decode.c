@@ -3,8 +3,7 @@
 #include "instmasks.h"
 #include "regimm.h"
 // #include "regreg.h"
-// #include "jal.h"
-#include "jalr.h"
+#include "jump.h"
 // #include "branch.h"
 #include "mem.h"
 #include "gprf.h"
@@ -40,7 +39,7 @@ int decodeandcall(unsigned int instruction) {
             imm = getjalimm(instruction);
 
         fprintf(logfile, "[JAL] %08x : rd %d, imm %d\n", instruction, rd, imm);
-        // retval = jumpandlink(rd, imm);
+        retval = jumpandlink(rd, imm);
 
     } else if (check(instruction, jalrmask)){
         unsigned int
