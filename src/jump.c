@@ -25,6 +25,11 @@ int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
         #endif
     }
 
+    if (gprread(rs1) % 4) {
+        fprintf(logfile, "[ERROR] mis-aligned jump address (%08x)", gprread(rs1));
+        return EFAULT;
+    }
+
     // update pc
     gprputpc(gprread(rs1) + imm);
 
@@ -45,6 +50,11 @@ int jumpandlink(unsigned int rd, unsigned int jalimm) {
         #if(debug == all)
         fprintf(logfile, "[JAL] saved pc %08x to %d register\n", gprgetpc()+4, rd);
         #endif
+    }
+
+    if (jalimm % 4) {
+        fprintf(logfile, "[ERROR] mis-aligned addition to pc (%08x)", jalimm);
+        return EFAULT;
     }
 
     // update pc

@@ -30,7 +30,7 @@ int mainloop() {
         pc = gprgetpc();
         instruction = memread32u(pc);
 #ifdef debug
-        fprintf(logfile, "[ALL] inst fetched from %08x -> %08x", pc, inst);
+        fprintf(logfile, "[ALL] inst fetched from %08x -> %08x\n", pc, instruction);
 #endif
         retval = decodeandcall(instruction);
         if (retval == ENOEXEC) {
