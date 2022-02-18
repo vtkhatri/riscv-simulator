@@ -4,28 +4,18 @@
 
 #include "regimm.h"
 
-#define immfieldlength 12
-
-int signextendregisterimmediate(int value) {
-    int mask;
-    mask = 1U << (immfieldlength - 1);
-    value = value & ((1U << immfieldlength) - 1);
-    return (value ^ mask) - mask;
-}
-
-int registerimmediate(unsigned int rd, unsigned int rs1,
-                      unsigned int funct3, unsigned int funct7,
-                      unsigned int imm) {
-    errno = 0;
+int registerregister(unsigned int rd, unsigned int rs1,
+                     unsigned int rs2, unsigned int funct3,
+                     unsigned int funct7) {
     switch(funct3) {
         case funct3add:
-            gprwrite(rd, gprread(rs1)+imm);
+            gprwrite(rd, gprread(rs1)+gprread(rs2));
             break;
         case funct3shiftleftl:
             gprwrite(rd, gprread(rs1) << imm);
             break;
         case funct3setlessthan:
-            if ((int)gprread(rs1) < (int)signextendregisterimmediate((int)imm)) {
+            if ((int)gprread(rs1) < (int)imm) {
                 gprwrite(rd, 1);
             } else {
                 gprwrite(rd, 0);
@@ -62,17 +52,8 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             return EINVAL;
             break;
     }
-    return errno;
-}
 
-int lui(unsigned int rd, unsigned int uimm) {
-    errno = 0;
-    gprwrite(rd, uimm);
-    return errno;
-}
+    int retval = gprputpc(gprgetpc() + 4);
 
-int auipc(unsigned int rd, unsigned int uimm) {
-    errno = 0;
-    gprwrite(rd, gprgetpc()+uimm);
-    return errno;
+    return retval;
 }

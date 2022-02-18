@@ -14,19 +14,33 @@ int decodeandcall(unsigned int instruction) {
 
     if (check(instruction, registerimmediatemask)) {
         unsigned int
-            rd = getrs1(instruction),
-            rs1 = getrd(instruction),
+            rd = getrd(instruction),
+            rs1 = getrs1(instruction),
             funct3 = getfunct3(instruction),
             funct7 = getfunct7(instruction),
             imm = getregimmimm(instruction);
 
+        fprintf(logfile, "[REGIMM] %08x : rd %d, rs1 %d, funct3 %d, funct7 %d, imm %d\n", instruction, rd, rs1, funct3, funct7, imm);
         retval = registerimmediate(rd, rs1, funct3, funct7, imm);
 
     } else if (check(instruction, registerregistermask)) {
-        fprintf(logfile, "%08x - register register\n", instruction);
+        unsigned int
+            rd = getrd(instruction),
+            rs1 = getrs1(instruction),
+            rs2 = getrs2(instruction),
+            funct3 = getfunct3(instruction),
+            funct7 = getfunct7(instruction);
+
+        fprintf(logfile, "[REGREG] %08x : rd %d, rs1 %d, rs2 %d, funct3 %d, funct7 %d\n", instruction, rd, rs1, rs2, funct3, funct7);
+        // retval = registerregister(rd, rs1, rs2, funct3, funct7);
 
     } else if (check(instruction, jalmask)) {
-        fprintf(logfile, "%08x - jal\n", instruction);
+        unsigned int
+            rd = getrd(instruction),
+            imm = getjalimm(instruction);
+
+        fprintf(logfile, "[JAL] %08x : rd %d, imm %d\n", instruction, rd, imm);
+        // retval = jumpandlink(rd, imm);
 
     } else if (check(instruction, jalrmask)){
         unsigned int
@@ -34,6 +48,7 @@ int decodeandcall(unsigned int instruction) {
             rd = getrd(instruction),
             imm = getjalrimm(instruction);
 
+        fprintf(logfile, "[JALR] %08x : rd %d, rs1 %d, imm %d", instruction, rd, rs1, imm);
         retval = jumpandlinkregister(rs1, rd, imm);
 
     } else if (check(instruction, branchmask)) {
@@ -46,28 +61,37 @@ int decodeandcall(unsigned int instruction) {
         fprintf(logfile, "%08x - store\n", instruction);
 
     } else if (check(instruction, luimask)) {
-        fprintf(logfile, "%08x - lui\n", instruction);
+        unsigned int
+            rd = getrd(instruction),
+            uimm = getuimm(instruction);
+
+        fprintf(logfile, "[LUI] %08x : rd %d, upperimm %d\n", instruction, rd, uimm);
+        retval = lui(rd, uimm);
 
     } else if (check(instruction, auipcmask)) {
-        fprintf(logfile, "%08x - auipc / call\n", instruction);
+        unsigned int
+            rd = getrd(instruction),
+            uimm = getuimm(instruction);
+
+        fprintf(logfile, "[AUIPC] %08x : rd %d, upperimm %d\n", instruction, rd, uimm);
+        retval = auipc(rd, uimm);
 
     } else {
         return EINVAL;
     }
 
     if (retval) {
-        if (retval == ENOEXEC) {
-            return ENOEXEC;
+        if (retval == ENOEXEC) {  // NOEXEC means nothing left to execute
+            return ENOEXEC;       // this happens when jr ra is called with ra = 0
         }
         printf("[ERROR] %s got retval = %d\n", __func__, retval);
         return(retval);
     }
     // temp
     unsigned int pc = gprgetpc();
-    fprintf(logfile, "old pc = %08x\n", pc);
+    fprintf(logfile, "pc = %08x\n", pc);
     pc = pc + 4;
     gprputpc(pc);
-    fprintf(logfile, "new pc = %08x\n", pc);
 
     return 0;
 }

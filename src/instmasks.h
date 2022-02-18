@@ -12,6 +12,8 @@
 #define luimask   55 // 0110111
 #define auipcmask 23 // 0010111
 
+#define getuimm(x) ((x) & (1048575 << 12)) // upper 20-bits from 32-bit inst, not shifte
+
 #define registerimmediatemask 19 // 0010011
 #define getregimmimm(x) ((x) & (4095 << 20)) >> 20 // inst[31:20] = imm[11:0]
 #define getshamtfromimm(x) (x) & 31 // imm[4:0] = shift amount

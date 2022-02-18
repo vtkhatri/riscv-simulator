@@ -10,3 +10,8 @@ int registerimmediate(unsigned int rd,
                       unsigned int funct7,
                       unsigned int imm);
 
+int lui(unsigned int rd,
+        unsigned int uimm);
+
+int auipc(unsigned int rd,
+          unsigned int uimm);
