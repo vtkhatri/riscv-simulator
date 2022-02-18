@@ -46,3 +46,4 @@ int printgprf();
 int initgprf(unsigned int pc, unsigned int sp);
 unsigned int gprgetpc();
 int gprputpc(unsigned int pc);
+int gprnextpc();
