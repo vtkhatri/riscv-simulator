@@ -4,8 +4,18 @@
 
 #include "jump.h"
 
+int signextendjumpimm(int value, int immfieldlength) {
+    int mask;
+    mask = 1U << (immfieldlength - 1);
+    value = value & ((1U << immfieldlength) - 1);
+    return (value ^ mask) - mask;
+}
+
 int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
     errno = 0;
+
+    unsigned int pc = gprgetpc()+4;
+    unsigned int newpc = gprread(rs1) + signextendjumpimm(imm, 12);
 
     // exit condition - jr ra when ra has all zeros
     if (rs1 == ra && 0 == gprread(rs1)) {
@@ -18,7 +28,7 @@ int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
         fprintf(logfile, "[JALR] no linking, just jump\n");
         #endif
     } else {
-        gprwrite(rd, gprgetpc()+4);
+        gprwrite(rd, pc);
 
         #if(debug == all)
         fprintf(logfile, "[JALR] saved pc %08x to %d register\n", gprgetpc()+4, rd);
@@ -31,7 +41,7 @@ int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
     }
 
     // update pc
-    gprputpc(gprread(rs1) + imm);
+    gprputpc(newpc);
 
     return errno;
 }
@@ -58,7 +68,7 @@ int jumpandlink(unsigned int rd, unsigned int jalimm) {
     }
 
     // update pc
-    gprputpc(gprgetpc()+jalimm);
+    gprputpc(gprgetpc()+signextendjumpimm(jalimm,21));
 
     return errno;
 }
