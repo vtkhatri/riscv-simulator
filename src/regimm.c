@@ -17,15 +17,16 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
                       unsigned int funct3, unsigned int funct7,
                       unsigned int imm) {
     errno = 0;
+
     switch(funct3) {
         case funct3add:
-            gprwrite(rd, (int) gprread(rs1) + (int)signextendregisterimmediate((int)imm));
+            gprwrite(rd, (int) gprread(rs1) + signextendregisterimmediate(imm));
             break;
         case funct3shiftleftl:
             gprwrite(rd, gprread(rs1) << imm);
             break;
         case funct3setlessthan:
-            if ((int)gprread(rs1) < (int)signextendregisterimmediate((int)imm)) {
+            if ((int)gprread(rs1) < signextendregisterimmediate(imm)) {
                 gprwrite(rd, 1);
             } else {
                 gprwrite(rd, 0);
