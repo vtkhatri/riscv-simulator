@@ -55,9 +55,9 @@
 /* conditional branches */
 #define branchmask 99 // 1100011
 #define getbranchimm(x) (((x) & (1 << 31)) >> 19) \
-                      + (((x) & (127 << 25)) >> 20) \
-                      + (((x) & (1 << 7)) << 4) \
-                      + (((x) & (31 << 8)) >> 7) // inst[31:25] = offset[12|10:5] & inst[11:7] = offset[4:1|11]
+                      + (((x) & (63 << 25)) >> 20) \
+                      + (((x) & (15 << 8)) >> 7) \
+                      + (((x) & (1 << 7)) << 4) // inst[31:25] = offset[12|10:5] & inst[11:7] = offset[4:1|11]
 
 #define funct3equal         0 // 000
 #define funct3notequal      1 // 001
