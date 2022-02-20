@@ -6,7 +6,7 @@ static unsigned int x[32];
 static unsigned int pc;
 
 const char *gprfnames[] = {
-    "zero",
+    "ze",
     "ra",
     "sp",
     "gp",
@@ -14,7 +14,7 @@ const char *gprfnames[] = {
     "t0",
     "t1",
     "t2",
-    "s0fp",
+    "s0",
     "s1",
     "a0",
     "a1",
@@ -27,12 +27,13 @@ const char *gprfnames[] = {
     "s2",
     "s3",
     "s4",
+    "s5",
     "s6",
     "s7",
     "s8",
     "s9",
-    "s10",
-    "s11",
+    "sa",
+    "sb",
     "t3",
     "t4",
     "t5",
@@ -67,10 +68,12 @@ int gprwrite(gprfindex index, unsigned int value) {
     return 0;
 }
 
-int gprfprint() {
-    fprintf(logfile, "pc - %d\n", pc);
-    for (int i=zero; i<=t6; i++) {
-        fprintf(logfile, "%s - %x\n", gprfnames[i], gprread(i));
+int printgprf() {
+    fprintf(logfile, ": pc -> %08x(%d) :\n", pc, pc);
+    for (int i=0; i<4; i++) {
+        fprintf(logfile, ": ");
+        for (int j=0; j<8; j++) fprintf(logfile, "%s -> %08x : ", gprfnames[(i*8) + j], gprread((i*8) + j));
+        fprintf(logfile, "\n");
         if (errno != 0) {
             fprintf(logfile, "[ERROR] apocalypitic error occured, out of range with using enum - %s", __func__);
             return EINVAL;
