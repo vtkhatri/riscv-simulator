@@ -13,7 +13,7 @@ MEMS := $(ASSS:s=mem)
 LOGS := $(ASSS:s=log)
 PCS := $(ASSS:s=pc)
 
-STACKADDRESS := 65535
+STACKADDRESS := 65536
 
 ifdef MEMDIRS
 	MEMS += $(shell find $(MEMDIRS) -name '*.mem') # ability to provide mem files

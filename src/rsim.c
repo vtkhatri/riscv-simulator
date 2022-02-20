@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     // initialize whatever is required
     FILE *memfile = fopen("program.mem", "r");
     unsigned int programcounter = 0;
-    unsigned int stackaddress = 65535;
+    unsigned int stackaddress = 65536;
 
     char *memfilename = (char *) malloc (strlen(argv[1]) + 1);
     memfilename = argv[1];
@@ -99,8 +99,8 @@ int main(int argc, char** argv) {
             }
         }
         stackaddress = (unsigned int) strtoul (argv[3], NULL, 10); // in hex because we get it from dumping .o files
-        if (stackaddress == 0) {
-            printf("[ERROR] invalid stack address 0, quitting.");
+        if (stackaddress == 0 || stackaddress % 4) {
+            printf("[ERROR] invalid stack address, quitting.\n");
             return (1);
         }
     }
@@ -118,7 +118,7 @@ int main(int argc, char** argv) {
     }
 
     // distinct prints to logfile to check if everything is working.
-    fprintf(logfile, "memory file = %s\nprogram counter = %d\nstack address = %d\n", memfilename, programcounter, stackaddress);
+    fprintf(logfile, "memory file = %s\nprogram counter = %08x(%d)\nstack address = %d\n", memfilename, programcounter, programcounter, stackaddress);
 
     // initializing memory
     int retval = initmemory(stackaddress, memfilename);

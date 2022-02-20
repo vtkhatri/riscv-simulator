@@ -19,7 +19,7 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
     errno = 0;
     switch(funct3) {
         case funct3add:
-            gprwrite(rd, gprread(rs1)+imm);
+            gprwrite(rd, (int) gprread(rs1) + (int)signextendregisterimmediate((int)imm));
             break;
         case funct3shiftleftl:
             gprwrite(rd, gprread(rs1) << imm);
