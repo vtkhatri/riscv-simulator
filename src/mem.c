@@ -52,19 +52,27 @@ int memwrite32u(unsigned int address, unsigned int value) {
     }
 
     // simple overwrite of element
+    #if (debug == all) || (debug == mem)
+        fprintf(logfile, "[MEMWRITE] 32u : address %08x, value %08x\n", address, value);
+    #endif
+
     ram[ramaddress(address)] = value;
     return 0;
 }
 
 int memwrite16u(unsigned int address, unsigned int value) {
     if (address % halfwordalignment) {
-        printf("[ERROR] mis-aligned address, called %s with address %x", __func__, address);
+        printf("[ERROR] mis-aligned address, called %s with address %x\n", __func__, address);
         return EINVAL;
     }
 
     if (value != halfwordlowmask & value) {
         return ERANGE;
     }
+
+    #if (debug == all) || (debug == mem)
+        fprintf(logfile, "[MEMWRITE] 16u : address %08x, value %08x\n", address, value);
+    #endif
 
     // clearing 16-bits
     ram[ramaddress(address)] = ram[ramaddress(address)] & (halfwordlowmask << halfword*(address % wordalignment));
@@ -78,6 +86,10 @@ int memwrite8u(unsigned int address, unsigned int value) {
     if (value != value & byte1mask) {
         return ERANGE;
     }
+
+    #if (debug == all) || (debug == mem)
+        fprintf(logfile, "[MEMWRITE]  8u : address %08x, value %08x\n", address, value);
+    #endif
 
     // clearing 8-bits
     ram[ramaddress(address)] = ram[ramaddress(address)] & (byte1maskinv << byte*(address % wordalignment));
@@ -93,6 +105,10 @@ unsigned int memread32u(unsigned int address) {
         return 0;
     }
 
+    #if (debug == all) || (debug == mem)
+        fprintf(logfile, "[MEMREAD] 32u : address %08x, value %08x\n", address, ram[ramaddress(address)]);
+    #endif
+
     // simple word dump
     return ram[ramaddress(address)];
 }
@@ -103,16 +119,30 @@ unsigned int memread16u(unsigned int address) {
         return 0;
     }
 
+    unsigned int readval;
     if (address % wordalignment) {
-        return (ram[ramaddress(address)] & halfwordhighmask) >> halfword;
+        readval = (ram[ramaddress(address)] & halfwordhighmask) >> halfword;
     } else {
-        return ram[ramaddress(address)] & halfwordlowmask;
+        readval = ram[ramaddress(address)] & halfwordlowmask;
     }
+
+    #if (debug == all) || (debug == mem)
+        fprintf(logfile, "[MEMREAD] 16u : address %08x, value %08x\n", address, readval);
+    #endif
+
+    return readval;
 }
 
 unsigned int memread8u(unsigned int address) {
-    return (ram[ramaddress(address)] & (byte1mask << (byte * (address % wordalignment)))) // get 8-bits
-              >> (byte * (address % wordalignment)); // shift to correct it's value
+
+    unsigned int readval = (ram[ramaddress(address)] & (byte1mask << (byte * (address % wordalignment)))) // get 8-bits
+                            >> (byte * (address % wordalignment)); // shift to correct it's value
+
+    #if (debug == all) || (debug == mem)
+        fprintf(logfile, "[MEMREAD]  8u : address %08x, value %08x\n", address, readval);
+    #endif
+
+    return readval;
 }
 
 int signextendmemimm(int value, int fieldlength) {
@@ -150,7 +180,7 @@ int load(unsigned int rd, unsigned int rs1, unsigned int funct3, unsigned int ld
             gprwrite(rd, readvalue);
             break;
         default:
-            fprintf(logfile, "[ERROR] load given invalid funct3 (%d)", funct3);
+            fprintf(logfile, "[ERROR] load given invalid funct3 (%d)\n", funct3);
             return EINVAL;
             break;
     }
@@ -181,7 +211,7 @@ int store(unsigned int rs1, unsigned int rs2, unsigned int funct3, unsigned int 
             errno = memwrite16u(effectiveaddress, writevalue);
             break;
         default:
-            fprintf(logfile, "[ERROR] store given invalid funct3 (%d)", funct3);
+            fprintf(logfile, "[ERROR] store given invalid funct3 (%d)\n", funct3);
             return EINVAL;
             break;
     }

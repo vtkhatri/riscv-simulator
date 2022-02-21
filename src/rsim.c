@@ -32,6 +32,9 @@ int mainloop() {
 #ifdef debug
         fprintf(logfile, "[ALL] inst fetched from %08x -> %08x\n", pc, instruction);
 #endif
+#if (debug == gprf) || (debug == all)
+        printgprf();
+#endif
         retval = decodeandcall(instruction);
         if (retval == ENOEXEC) {
             fprintf(logfile, "[FIN] jr ra called with ra containing 0; pc = %08x\n", pc);
