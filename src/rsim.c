@@ -101,9 +101,9 @@ int main(int argc, char** argv) {
                 return (1);
             }
         }
-        stackaddress = (unsigned int) strtoul (argv[3], NULL, 10); // in hex because we get it from dumping .o files
+        stackaddress = (unsigned int) strtoul (argv[3], NULL, 16); // in hex because we get it from dumping .o files
         if (stackaddress == 0 || stackaddress % 4) {
-            printf("[ERROR] invalid stack address, quitting.\n");
+            printf("[ERROR] invalid stack address %08x(%0d), quitting.\n", stackaddress, stackaddress);
             return (1);
         }
     }
