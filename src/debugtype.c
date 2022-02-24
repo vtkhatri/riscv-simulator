@@ -38,27 +38,3 @@ ttarget:
     fprintf(stdout, "invalid input %c %s, continuing.\n", cmd, address);
     return 0;
 }
-
-int handledebugtype(debugtypet debugtype) {
-    switch(debugtype) {
-    case gdb:
-        logfile = stdout;
-        return loopcheck();
-        break;
-    case tracemem:
-        memlogfile = logfile;
-        logfile = stdout;
-        break;
-    case tracegprf:
-        gprflogfile = logfile;
-        logfile = stdout;
-        break;
-    case traceall:
-        memlogfile = logfile;
-        gprflogfile = logfile;
-        break;
-    default:
-        fprintf(stderr, "[ERROR] debug type? %d", debugtype);
-        return EINVAL;
-    }
-}

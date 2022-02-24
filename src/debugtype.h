@@ -11,4 +11,4 @@ typedef enum {
     traceall
 } debugtypet;
 
-int handledebugtype(debugtypet);
+int loopcheck();

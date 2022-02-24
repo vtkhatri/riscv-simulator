@@ -19,6 +19,33 @@ void stripextension(char *filename) {
     }
 }
 
+int handledebugtype(debugtypet debugtype) {
+    switch(debugtype) {
+    case gdb:
+        logfile = stdout;
+        return loopcheck();
+        break;
+    case tracemem:
+        fclose(logfile);
+        memlogfile = fopen(logfilename, "a");
+        logfile = stdout;
+        return EPERM;
+    case tracegprf:
+        fclose(logfile);
+        gprflogfile = fopen(logfilename, "a");
+        logfile = stdout;
+        return EPERM;
+    case traceall:
+        fclose(logfile);
+        memlogfile = fopen(logfilename, "a");
+        gprflogfile = memlogfile;
+        return EPERM;
+    default:
+        fprintf(stderr, "[ERROR] debug type? %d", debugtype);
+        return EINVAL;
+    }
+}
+
 void printUsage() {
     printf("Usage -\n  ./rsim <path to memory image file> <starting address in hex> <stack address> <debugtype>\n");
     return;
@@ -137,7 +164,7 @@ int main(int argc, char** argv) {
     }
 
     // initializing logfile
-    char *logfilename = (char *) malloc (strlen(memfilename) +1);
+    logfilename = (char *) malloc (strlen(memfilename) +1);
     strcpy(logfilename, memfilename);
     stripextension(logfilename);
     strcat(logfilename, ".log");

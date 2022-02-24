@@ -14,6 +14,7 @@ LOGS := $(ASSS:s=log)
 PCS := $(ASSS:s=pc)
 
 STACKADDRESS := 1000
+DEBUGTYPE := tracemem
 
 ifdef MEMDIRS
 	MEMS += $(shell find $(MEMDIRS) -name '*.mem') # ability to provide mem files
@@ -21,6 +22,16 @@ endif
 
 ifdef ASSSDIRS
 	ASSS += $(shell find $(ASSSDIRS) -name '*.s') # ability to provide assembly files
+endif
+
+ifdef gprf
+	DEBUGTYPE = tracegprf
+endif
+ifdef all
+	DEBUGTYPE = traceall
+endif
+ifdef gdb
+	DEBUGTYPE = gdb
 endif
 
 RVOBJDUMP := /pkgs/riscv-gnu-toolchain/riscv-gnu-toolchain/bin/riscv64-unknown-linux-gnu-objdump
@@ -48,7 +59,7 @@ build:
 test: $(LOGS)
 
 %.log: %.mem %.pc # get just .pc files from pre-reqs, then cat out it's contents (actual PC in hex)
-	$(EXEC) $< $$(cat $(filter-out $<,$^)) $(STACKADDRESS)
+	$(EXEC) $< $$(cat $(filter-out $<,$^)) $(STACKADDRESS) $(DEBUGTYPE)
 
 testfiles: $(ASSS) $(OBJS) $(MEMS) $(PCS)
 

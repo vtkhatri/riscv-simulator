@@ -55,9 +55,7 @@ int memwrite32u(unsigned int address, unsigned int value) {
 
     unsigned int before = ram[ramaddress(address)];
     ram[ramaddress(address)] = value;
-    #if (debug == all) || (debug == mem)
-        fprintf(memlogfile, "ram[%08x] = %08x(32) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
-    #endif
+    fprintf(memlogfile, "ram[%08x]  = %08x(32) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
     return 0;
 }
 
@@ -77,9 +75,7 @@ int memwrite16u(unsigned int address, unsigned int value) {
     // setting 16-bits according to value
     ram[ramaddress(address)] = ram[ramaddress(address)] | (value << halfword*(address % wordalignment));
 
-    #if (debug == all) || (debug == mem)
-        fprintf(memlogfile, "ram[%08x] = %08x(16) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
-    #endif
+    fprintf(memlogfile, "ram[%08x]  = %08x(16) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
 
     return 0;
 }
@@ -96,9 +92,7 @@ int memwrite8u(unsigned int address, unsigned int value) {
     // setting 8-bits according to value
     ram[ramaddress(address)] = ram[ramaddress(address)] | (value << byte*(address % wordalignment));
 
-    #if (debug == all) || (debug == mem)
-        fprintf(memlogfile, "ram[%08x] = %08x(08) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
-    #endif
+    fprintf(memlogfile, "ram[%08x]  = %08x(08) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
 
     return 0;
 }
@@ -109,9 +103,7 @@ unsigned int memread32u(unsigned int address) {
         return 0;
     }
 
-    #if (debug == all) || (debug == mem)
-        fprintf(memlogfile, "ram[%08x] -> %08x\n", address, ram[ramaddress(address)]);
-    #endif
+    fprintf(memlogfile, "ram[%08x] -> %08x\n", address, ram[ramaddress(address)]);
 
     // simple word dump
     return ram[ramaddress(address)];
@@ -130,9 +122,7 @@ unsigned int memread16u(unsigned int address) {
         readval = ram[ramaddress(address)] & halfwordlowmask;
     }
 
-    #if (debug == all) || (debug == mem)
-        fprintf(memlogfile, "ram[%08x] -> %08x(16) ; %08x\n", address, readval, ram[ramaddress(address)]);
-    #endif
+    fprintf(memlogfile, "ram[%08x] -> %08x(16) ; %08x\n", address, readval, ram[ramaddress(address)]);
 
     return readval;
 }
@@ -142,9 +132,7 @@ unsigned int memread8u(unsigned int address) {
     unsigned int readval = (ram[ramaddress(address)] & (byte1mask << (byte * (address % wordalignment)))) // get 8-bits
                             >> (byte * (address % wordalignment)); // shift to correct it's value
 
-    #if (debug == all) || (debug == mem)
-        fprintf(memlogfile, "ram[%08x] -> %08x(8) ; %08x\n", address, readval, ram[ramaddress(address)]);
-    #endif
+    fprintf(memlogfile, "ram[%08x] -> %08x(8) ; %08x\n", address, readval, ram[ramaddress(address)]);
 
     return readval;
 }
