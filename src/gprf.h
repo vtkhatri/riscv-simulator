@@ -41,7 +41,7 @@ typedef enum {
 
 unsigned int gprread(gprfindex);
 int gprwrite(gprfindex, unsigned int);
-int printgprf();
+int printgprf(FILE *);
 
 int initgprf(unsigned int pc, unsigned int sp);
 unsigned int gprgetpc();

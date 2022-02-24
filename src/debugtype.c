@@ -26,7 +26,7 @@ ttarget:
         return EPERM; // eperm means don't need to check anything again, just complete execution.
     } else if (cmd == 'p') {
         if (*address == 'g') {
-            printgprf();
+            printgprf(stdout);
             goto ttarget;
         } else {
             unsigned int addressnum = strtoul(address, NULL, 16);

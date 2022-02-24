@@ -1,6 +1,7 @@
 #include "gprf.h"
 
 extern FILE *logfile;
+extern FILE *gprflogfile;
 
 static unsigned int x[32];
 static unsigned int pc;
@@ -68,14 +69,14 @@ int gprwrite(gprfindex index, unsigned int value) {
     return 0;
 }
 
-int printgprf() {
-    fprintf(logfile, ": pc -> %08x(%d) :\n", pc, pc);
+int printgprf(FILE *templogfile) {
+    fprintf(templogfile, ": pc -> %08x(%d) :\n", pc, pc);
     for (int i=0; i<4; i++) {
-        fprintf(logfile, ": ");
-        for (int j=0; j<8; j++) fprintf(logfile, "%s -> %08x : ", gprfnames[(i*8) + j], gprread((i*8) + j));
-        fprintf(logfile, "\n");
+        fprintf(templogfile, ": ");
+        for (int j=0; j<8; j++) fprintf(templogfile, "%s -> %08x : ", gprfnames[(i*8) + j], gprread((i*8) + j));
+        fprintf(templogfile, "\n");
         if (errno != 0) {
-            fprintf(logfile, "[ERROR] apocalypitic error occured, out of range with using enum - %s", __func__);
+            fprintf(stdout, "[ERROR] apocalypitic error occured, out of range with using enum - %s", __func__);
             return EINVAL;
         }
     }

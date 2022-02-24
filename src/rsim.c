@@ -59,6 +59,7 @@ int mainloop(debugtypet debugtype) {
     do {
         retval = 0;
         if (tocheck != EPERM) tocheck = handledebugtype(debugtype);
+        printgprf(gprflogfile);
         pc = gprgetpc();
         instruction = memread32u(pc);
         fprintf(logfile, "[INST] inst fetched from %08x -> %08x\n", pc, instruction);
@@ -213,7 +214,6 @@ int main(int argc, char** argv) {
         fprintf(stderr, "[ERROR] mainloop returns non-zero retval.\n");
     }
 
-    fclose(logfile);
     return(retval);
 }
 
