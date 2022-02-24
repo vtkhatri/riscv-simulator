@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
     }
 
     // distinct prints to logfile to check if everything is working.
-    fprintf(logfile, "memory file = %s\nprogram counter = %08x(%d)\nstack address = %d\ndebugtype = %d",
+    fprintf(logfile, "memory file = %s\nprogram counter = %08x(%d)\nstack address = %d\ndebugtype = %d\n",
                      memfilename, programcounter, programcounter, stackaddress, debugtype);
 
     // initializing memory

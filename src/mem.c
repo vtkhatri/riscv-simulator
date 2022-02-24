@@ -52,11 +52,12 @@ int memwrite32u(unsigned int address, unsigned int value) {
     }
 
     // simple overwrite of element
-    #if (debug == all) || (debug == mem)
-        fprintf(logfile, "[MEMWRITE] 32u : address %08x, value %08x\n", address, value);
-    #endif
 
+    unsigned int before = ram[ramaddress(address)];
     ram[ramaddress(address)] = value;
+    #if (debug == all) || (debug == mem)
+        fprintf(memlogfile, "ram[%08x] = %08x(32) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
+    #endif
     return 0;
 }
 
@@ -70,14 +71,15 @@ int memwrite16u(unsigned int address, unsigned int value) {
         return ERANGE;
     }
 
-    #if (debug == all) || (debug == mem)
-        fprintf(logfile, "[MEMWRITE] 16u : address %08x, value %08x\n", address, value);
-    #endif
-
+    unsigned int before = ram[ramaddress(address)];
     // clearing 16-bits
     ram[ramaddress(address)] = ram[ramaddress(address)] & (halfwordlowmask << halfword*(address % wordalignment));
     // setting 16-bits according to value
     ram[ramaddress(address)] = ram[ramaddress(address)] | (value << halfword*(address % wordalignment));
+
+    #if (debug == all) || (debug == mem)
+        fprintf(memlogfile, "ram[%08x] = %08x(16) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
+    #endif
 
     return 0;
 }
@@ -87,14 +89,16 @@ int memwrite8u(unsigned int address, unsigned int value) {
         return ERANGE;
     }
 
-    #if (debug == all) || (debug == mem)
-        fprintf(logfile, "[MEMWRITE]  8u : address %08x, value %08x\n", address, value);
-    #endif
 
+    unsigned int before = ram[ramaddress(address)];
     // clearing 8-bits
     ram[ramaddress(address)] = ram[ramaddress(address)] & (byte1maskinv << byte*(address % wordalignment));
     // setting 8-bits according to value
     ram[ramaddress(address)] = ram[ramaddress(address)] | (value << byte*(address % wordalignment));
+
+    #if (debug == all) || (debug == mem)
+        fprintf(memlogfile, "ram[%08x] = %08x(08) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
+    #endif
 
     return 0;
 }
@@ -106,7 +110,7 @@ unsigned int memread32u(unsigned int address) {
     }
 
     #if (debug == all) || (debug == mem)
-        fprintf(logfile, "[MEMREAD] 32u : address %08x, value %08x\n", address, ram[ramaddress(address)]);
+        fprintf(memlogfile, "ram[%08x] -> %08x\n", address, ram[ramaddress(address)]);
     #endif
 
     // simple word dump
@@ -127,7 +131,7 @@ unsigned int memread16u(unsigned int address) {
     }
 
     #if (debug == all) || (debug == mem)
-        fprintf(logfile, "[MEMREAD] 16u : address %08x, value %08x\n", address, readval);
+        fprintf(memlogfile, "ram[%08x] -> %08x(16) ; %08x\n", address, readval, ram[ramaddress(address)]);
     #endif
 
     return readval;
@@ -139,7 +143,7 @@ unsigned int memread8u(unsigned int address) {
                             >> (byte * (address % wordalignment)); // shift to correct it's value
 
     #if (debug == all) || (debug == mem)
-        fprintf(logfile, "[MEMREAD]  8u : address %08x, value %08x\n", address, readval);
+        fprintf(memlogfile, "ram[%08x] -> %08x(8) ; %08x\n", address, readval, ram[ramaddress(address)]);
     #endif
 
     return readval;
@@ -180,7 +184,7 @@ int load(unsigned int rd, unsigned int rs1, unsigned int funct3, unsigned int ld
             gprwrite(rd, readvalue);
             break;
         default:
-            fprintf(logfile, "[ERROR] load given invalid funct3 (%d)\n", funct3);
+            fprintf(memlogfile, "[ERROR] load given invalid funct3 (%d)\n", funct3);
             return EINVAL;
             break;
     }
@@ -211,7 +215,7 @@ int store(unsigned int rs1, unsigned int rs2, unsigned int funct3, unsigned int 
             errno = memwrite16u(effectiveaddress, writevalue);
             break;
         default:
-            fprintf(logfile, "[ERROR] store given invalid funct3 (%d)\n", funct3);
+            fprintf(memlogfile, "[ERROR] store given invalid funct3 (%d)\n", funct3);
             return EINVAL;
             break;
     }

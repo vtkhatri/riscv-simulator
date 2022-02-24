@@ -29,7 +29,7 @@
 extern int decodeandcall(unsigned int instruction);
 extern unsigned int gprgetpc();
 
-extern FILE *logfile;
+extern FILE *logfile, *memlogfile;
 
 int memwrite32u(unsigned int address, unsigned int value);
 int memwrite16u(unsigned int address, unsigned int value);

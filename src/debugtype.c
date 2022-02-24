@@ -6,34 +6,36 @@
 
 int loopcheck() {
     char cmd;
-    char *address = (char*) malloc (9*sizeof(char));
+    char *address;
+    char *input = (char *) malloc (sizeof(cmd)+sizeof(address)+sizeof(char));
+    char *dummy;
 
-    int readchars;
 
 ttarget:
+    errno = 0;
     fprintf(stdout, "> ");
-    readchars = scanf("%c %s", &cmd, address);
+    dummy = fgets(input, sizeof(input)+1, stdin);
+    // fprintf(stdout, "%s <- %s\n", dummy, input);
 
-    if (readchars == 0) {
-        fprintf(stdout, "usage - [n|c|p] <location to print> <address for mem>");
-    }
+    cmd = strtok(input, " \n")[0];
+    address = strtok(NULL, " \n");
 
     if (cmd == 'n') {
         return 0; // go to next loop
     } else if (cmd == 'c') {
-        return EPERM; // eperm means don't need to check again.
+        return EPERM; // eperm means don't need to check anything again, just complete execution.
     } else if (cmd == 'p') {
-        if (readchars == 1) {
+        if (*address == 'g') {
             printgprf();
+            goto ttarget;
         } else {
-            if (readchars == 2) {
-                unsigned int addressnum = (unsigned int) strtoul (address, NULL, 16);
-                fprintf(stdout, "ram[%08x] = %08x", addressnum, memread32u(addressnum));
-            }
+            unsigned int addressnum = strtoul(address, NULL, 16);
+            fprintf(stdout, "ram[%08x] -> %08x\n", addressnum, memread32u(addressnum));
             goto ttarget;
         }
     }
 
+    fprintf(stdout, "invalid input %c %s, continuing.\n", cmd, address);
     return 0;
 }
 
@@ -45,9 +47,11 @@ int handledebugtype(debugtypet debugtype) {
         break;
     case tracemem:
         memlogfile = logfile;
+        logfile = stdout;
         break;
     case tracegprf:
         gprflogfile = logfile;
+        logfile = stdout;
         break;
     case traceall:
         memlogfile = logfile;
