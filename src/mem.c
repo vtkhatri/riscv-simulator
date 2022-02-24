@@ -65,15 +65,16 @@ int memwrite16u(unsigned int address, unsigned int value) {
         return EINVAL;
     }
 
-    if (value != halfwordlowmask & value) {
+    if (value > halfwordlowmask) {
+        printf("[ERROR] value passed to %s is more than 16-bits %08x (%08x)\n", __func__, value, (halfwordlowmask & value));
         return ERANGE;
     }
 
     unsigned int before = ram[ramaddress(address)];
     // clearing 16-bits
-    ram[ramaddress(address)] = ram[ramaddress(address)] & (halfwordlowmask << halfword*(address % wordalignment));
+    ram[ramaddress(address)] = ram[ramaddress(address)] & ~(halfwordlowmask << byte*(address % wordalignment));
     // setting 16-bits according to value
-    ram[ramaddress(address)] = ram[ramaddress(address)] | (value << halfword*(address % wordalignment));
+    ram[ramaddress(address)] = ram[ramaddress(address)] | (value << byte*(address % wordalignment));
 
     fprintf(memlogfile, "ram[%08x]  = %08x(16) ; %08x -> %08x \n", address, value, before, ram[ramaddress(address)]);
 
@@ -81,14 +82,15 @@ int memwrite16u(unsigned int address, unsigned int value) {
 }
 
 int memwrite8u(unsigned int address, unsigned int value) {
-    if (value != value & byte1mask) {
+    if (value > bytemask) {
+        printf("[ERROR] value passed to %s is more than 8-bits %08x (%08x)\n", __func__, value);
         return ERANGE;
     }
 
 
     unsigned int before = ram[ramaddress(address)];
     // clearing 8-bits
-    ram[ramaddress(address)] = ram[ramaddress(address)] & (byte1maskinv << byte*(address % wordalignment));
+    ram[ramaddress(address)] = ram[ramaddress(address)] & ~(bytemask << byte*(address % wordalignment));
     // setting 8-bits according to value
     ram[ramaddress(address)] = ram[ramaddress(address)] | (value << byte*(address % wordalignment));
 
@@ -129,7 +131,7 @@ unsigned int memread16u(unsigned int address) {
 
 unsigned int memread8u(unsigned int address) {
 
-    unsigned int readval = (ram[ramaddress(address)] & (byte1mask << (byte * (address % wordalignment)))) // get 8-bits
+    unsigned int readval = (ram[ramaddress(address)] & (bytemask << (byte * (address % wordalignment)))) // get 8-bits
                             >> (byte * (address % wordalignment)); // shift to correct it's value
 
     fprintf(memlogfile, "ram[%08x] -> %08x(8) ; %08x\n", address, readval, ram[ramaddress(address)]);
