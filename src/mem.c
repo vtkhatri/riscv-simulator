@@ -83,7 +83,7 @@ int memwrite16u(unsigned int address, unsigned int value) {
 
 int memwrite8u(unsigned int address, unsigned int value) {
     if (value > bytemask) {
-        printf("[ERROR] value passed to %s is more than 8-bits %08x (%08x)\n", __func__, value);
+        printf("[ERROR] value passed to %s is more than 8-bits %08x (%08x)\n", __func__, value, value);
         return ERANGE;
     }
 
