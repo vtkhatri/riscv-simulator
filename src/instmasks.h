@@ -27,9 +27,15 @@
 #define funct3or           6 // 110
 #define funct3and          7 // 111
 
+#define funct7normal       0
+
 #define funct7shiftrightl  0  // 0000000
 #define funct7shiftrighta  32 // 0100000
+#define funct7sub          32 // 0100000
 
+#define funct7m            1 // 0000001 means it's a r32m instruction
+#define lower32mask        ((1 << 32) - 1)
+#define upper32mask        (lower32mask << 32)
 
 // nop is encoded as addi x0, x0, 0 - 000000000000 00000 000 00000 0010011 = 19
 #define nopmask 19
