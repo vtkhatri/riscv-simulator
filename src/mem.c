@@ -1,4 +1,5 @@
 #include "mem.h"
+#include "rsim.h"
 #include "gprf.h"
 #include "instmasks.h"
 
@@ -139,27 +140,20 @@ unsigned int memread8u(unsigned int address) {
     return readval;
 }
 
-int signextendmemimm(int value, int fieldlength) {
-    int mask;
-    mask = 1U << (fieldlength - 1);
-    value = value & ((1U << fieldlength) - 1);
-    return (value ^ mask) - mask;
-}
-
 int load(unsigned int rd, unsigned int rs1, unsigned int funct3, unsigned int ldimm) {
     errno = 0;
 
-    unsigned int effectiveaddress = gprread(rs1) + signextendmemimm(ldimm, 12);
+    unsigned int effectiveaddress = gprread(rs1) + signextend(ldimm, 12);
     int readvalue;
 
     switch(funct3) {
         case funct3byte:
             readvalue = memread8u(effectiveaddress);
-            gprwrite(rd, signextendmemimm(readvalue, 8));
+            gprwrite(rd, signextend(readvalue, 8));
             break;
         case funct3halfword:
             readvalue = memread16u(effectiveaddress);
-            gprwrite(rd, signextendmemimm(readvalue, 16));
+            gprwrite(rd, signextend(readvalue, 16));
             break;
         case funct3word:
             readvalue = memread32u(effectiveaddress);
@@ -185,15 +179,15 @@ int load(unsigned int rd, unsigned int rs1, unsigned int funct3, unsigned int ld
 int store(unsigned int rs1, unsigned int rs2, unsigned int funct3, unsigned int stimm) {
     errno = 0;
 
-    unsigned int effectiveaddress = gprread(rs1) + signextendmemimm(stimm, 12);
+    unsigned int effectiveaddress = gprread(rs1) + signextend(stimm, 12);
     unsigned int writevalue = gprread(rs2);
 
     switch(funct3) {
         case funct3byte:
-            errno = memwrite8u(effectiveaddress, signextendmemimm(writevalue,8));
+            errno = memwrite8u(effectiveaddress, signextend(writevalue,8));
             break;
         case funct3halfword:
-            errno = memwrite16u(effectiveaddress, signextendmemimm(writevalue,16));
+            errno = memwrite16u(effectiveaddress, signextend(writevalue,16));
             break;
         case funct3word:
             errno = memwrite32u(effectiveaddress, writevalue);

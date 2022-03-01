@@ -8,3 +8,4 @@ FILE *logfile, *memlogfile, *gprflogfile; // global logfile so that everything c
 char *logfilename;
 
 void stripextension(char *filename); // might be usefule somewhere else
+int signextend(int value, int immlength);

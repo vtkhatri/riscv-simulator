@@ -4,14 +4,7 @@
 
 #include "regimm.h"
 
-#define immfieldlength 12
-
-int signextendregisterimmediate(int value) {
-    int mask;
-    mask = 1U << (immfieldlength - 1);
-    value = value & ((1U << immfieldlength) - 1);
-    return (value ^ mask) - mask;
-}
+#define regimmlength 12
 
 int registerimmediate(unsigned int rd, unsigned int rs1,
                       unsigned int funct3, unsigned int funct7,
@@ -20,13 +13,13 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
 
     switch(funct3) {
         case funct3add:
-            gprwrite(rd, (int) gprread(rs1) + signextendregisterimmediate(imm));
+            gprwrite(rd, (int) gprread(rs1) + signextend(imm, regimmlength));
             break;
         case funct3shiftleftl:
             gprwrite(rd, gprread(rs1) << imm);
             break;
         case funct3setlessthan:
-            if ((int)gprread(rs1) < signextendregisterimmediate(imm)) {
+            if ((int)gprread(rs1) < signextend(imm, regimmlength)) {
                 gprwrite(rd, 1);
             } else {
                 gprwrite(rd, 0);

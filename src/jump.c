@@ -1,21 +1,15 @@
 #include "mem.h"
 #include "gprf.h"
+#include "rsim.h"
 #include "instmasks.h"
 
 #include "jump.h"
-
-int signextendjumpimm(int value, int immfieldlength) {
-    int mask;
-    mask = 1U << (immfieldlength - 1);
-    value = value & ((1U << immfieldlength) - 1);
-    return (value ^ mask) - mask;
-}
 
 int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
     errno = 0;
 
     unsigned int pc = gprgetpc()+4;
-    unsigned int newpc = gprread(rs1) + signextendjumpimm(imm, 12);
+    unsigned int newpc = gprread(rs1) + signextend(imm, 12);
 
     // exit condition - jr ra when ra has all zeros
     if (rs1 == ra && 0 == gprread(rs1)) {
@@ -68,7 +62,7 @@ int jumpandlink(unsigned int rd, unsigned int jalimm) {
     }
 
     // update pc
-    gprputpc(gprgetpc()+signextendjumpimm(jalimm,21));
+    gprputpc(gprgetpc()+signextend(jalimm,21));
 
     return errno;
 }

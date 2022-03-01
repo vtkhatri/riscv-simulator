@@ -4,13 +4,7 @@
 
 #include "branch.h"
 
-#define immfieldlength 13
-int signextendbranchimm(int value) {
-    int mask;
-    mask = 1U << (immfieldlength - 1);
-    value = value & ((1U << immfieldlength) - 1);
-    return (value ^ mask) - mask;
-}
+#define branchimmlength 13
 
 int branch(unsigned int rs1, unsigned int rs2,
            unsigned int funct3, unsigned int brimm) {
@@ -21,7 +15,7 @@ int branch(unsigned int rs1, unsigned int rs2,
         return EFAULT;
     }
 
-    unsigned int newpc = gprgetpc() + (int) signextendbranchimm(brimm);
+    unsigned int newpc = gprgetpc() + (int) signextend(brimm, branchimmlength);
 
     switch(funct3) {
         case funct3equal:

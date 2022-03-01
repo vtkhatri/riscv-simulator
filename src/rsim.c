@@ -217,3 +217,10 @@ int main(int argc, char** argv) {
     return(retval);
 }
 
+int signextend(int value, int immlength) {
+    int mask;
+    mask = 1U << (immlength - 1);
+    value = value & ((1U << immlength) - 1);
+    return (value ^ mask) - mask;
+}
+
