@@ -34,8 +34,8 @@
 #define funct7sub          32 // 0100000
 
 #define funct7m            1 // 0000001 means it's a r32m instruction
-#define lower32mask        ((1 << 32) - 1)
-#define upper32mask        (lower32mask << 32)
+#define lower32mask        (((long long)1 << 32) - 1)
+#define upper32mask        ((long long)lower32mask << 32)
 
 // nop is encoded as addi x0, x0, 0 - 000000000000 00000 000 00000 0010011 = 19
 #define nopmask 19
