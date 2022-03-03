@@ -49,6 +49,7 @@ int initmemory(unsigned int size, char *memfilename) {
 
 int memwrite32u(unsigned int address, unsigned int value) {
     if (address % wordalignment) {
+        fprintf(stdout, "[ERROR] mis-aligned address, %s called with address %08x\n", address);
         return EINVAL;
     }
 
@@ -62,13 +63,14 @@ int memwrite32u(unsigned int address, unsigned int value) {
 
 int memwrite16u(unsigned int address, unsigned int value) {
     if (address % halfwordalignment) {
-        printf("[ERROR] mis-aligned address, called %s with address %x\n", __func__, address);
+        fprintf(stdout, "[ERROR] mis-aligned address, %s called with address %08x\n", __func__, address);
         return EINVAL;
     }
 
     if (value > halfwordlowmask) {
-        printf("[ERROR] value passed to %s is more than 16-bits %08x (%08x)\n", __func__, value, (halfwordlowmask & value));
-        return ERANGE;
+        fprintf(memlogfile, "[ERROR] value passed to %s is more than 16-bits %x, truncating to %x\n", __func__, value, value & halfwordlowmask);
+        // return ERANGE;
+        value = value & halfwordlowmask;
     }
 
     unsigned int before = ram[ramaddress(address)];
@@ -84,8 +86,9 @@ int memwrite16u(unsigned int address, unsigned int value) {
 
 int memwrite8u(unsigned int address, unsigned int value) {
     if (value > bytemask) {
-        printf("[ERROR] value passed to %s is more than 8-bits %08x (%08x)\n", __func__, value, value);
-        return ERANGE;
+        fprintf(memlogfile, "[ERROR] value passed to %s is more than 8-bits %x, truncating to %x\n", __func__, value, value & bytemask);
+        // return ERANGE;
+        value = value & bytemask;
     }
 
 
@@ -102,6 +105,7 @@ int memwrite8u(unsigned int address, unsigned int value) {
 
 unsigned int memread32u(unsigned int address) {
     if (address % wordalignment) {
+        fprintf(stdout, "[ERROR] mis-aligned address, %s called with address %08x\n", __func__, address);
         errno = EINVAL;
         return 0;
     }
@@ -114,6 +118,7 @@ unsigned int memread32u(unsigned int address) {
 
 unsigned int memread16u(unsigned int address) {
     if (address % halfwordalignment) {
+        fprintf(stdout, "[ERROR] mis-aligned address, %s called with address %08x\n", __func__, address);
         errno = EINVAL;
         return 0;
     }
@@ -184,10 +189,10 @@ int store(unsigned int rs1, unsigned int rs2, unsigned int funct3, unsigned int 
 
     switch(funct3) {
         case funct3byte:
-            errno = memwrite8u(effectiveaddress, signextend(writevalue,8));
+            errno = memwrite8u(effectiveaddress, writevalue);
             break;
         case funct3halfword:
-            errno = memwrite16u(effectiveaddress, signextend(writevalue,16));
+            errno = memwrite16u(effectiveaddress, writevalue);
             break;
         case funct3word:
             errno = memwrite32u(effectiveaddress, writevalue);
