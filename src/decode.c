@@ -20,7 +20,7 @@ int decodeandcall(unsigned int instruction) {
             funct7 = getfunct7(instruction),
             imm = getregimmimm(instruction);
 
-        fprintf(logfile, "[REGIMM] %08x : rd %d, rs1 %d, funct3 %d, funct7 %d, imm %d\n", instruction, rd, rs1, funct3, funct7, imm);
+        fprintf(logfile, "[REGIMM] %08x : rd %d, rs1 %d(%08x), funct3 %x, funct7 %x, imm %x\n", instruction, rd, rs1, gprread(rs1), funct3, funct7, imm);
         retval = registerimmediate(rd, rs1, funct3, funct7, imm);
 
         gprnextpc();
@@ -33,7 +33,7 @@ int decodeandcall(unsigned int instruction) {
             funct3 = getfunct3(instruction),
             funct7 = getfunct7(instruction);
 
-        fprintf(logfile, "[REGREG] %08x : rd %d, rs1 %d(%08x), rs2 %d(%08x), funct3 %d, funct7 %d\n",
+        fprintf(logfile, "[REGREG] %08x : rd %d, rs1 %d(%08x), rs2 %d(%08x), funct3 %x, funct7 %x\n",
                 instruction, rd, rs1, gprread(rs1), rs2, gprread(rs2), funct3, funct7);
         retval = registerregister(rd, rs1, rs2, funct3, funct7);
 
@@ -44,7 +44,7 @@ int decodeandcall(unsigned int instruction) {
             rd = getrd(instruction),
             imm = getjalimm(instruction);
 
-        fprintf(logfile, "[JAL] %08x : rd %d, imm %d\n", instruction, rd, imm);
+        fprintf(logfile, "[JAL] %08x : rd %d, imm %x\n", instruction, rd, imm);
         retval = jumpandlink(rd, imm);
 
     } else if (check(instruction, jalrmask)){
@@ -53,7 +53,7 @@ int decodeandcall(unsigned int instruction) {
             rd = getrd(instruction),
             imm = getjalrimm(instruction);
 
-        fprintf(logfile, "[JALR] %08x : rd %d, rs1 %d(%08x), imm %d\n", instruction, rd, rs1, gprread(rs1), imm);
+        fprintf(logfile, "[JALR] %08x : rd %d, rs1 %d(%08x), imm %x\n", instruction, rd, rs1, gprread(rs1), imm);
         retval = jumpandlinkregister(rs1, rd, imm);
 
     } else if (check(instruction, branchmask)) {
@@ -63,7 +63,7 @@ int decodeandcall(unsigned int instruction) {
             rs2 = getrs2(instruction),
             funct3 = getfunct3(instruction);
         
-        fprintf(logfile, "[BRANCH] %08x : rs1 %d(%08x), rs2 %d(%08x), funct3 %d, brimm %d\n",
+        fprintf(logfile, "[BRANCH] %08x : rs1 %d(%08x), rs2 %d(%08x), funct3 %x, brimm %x\n",
                 instruction, rs1, gprread(rs1), rs2, gprread(rs2), funct3, brimm);
         retval = branch(rs1, rs2, funct3, brimm);
 
@@ -74,7 +74,7 @@ int decodeandcall(unsigned int instruction) {
             funct3 = getfunct3(instruction),
             loadimm = getloadimm(instruction);
         
-        fprintf(logfile, "[LOAD] %08x : rd %d, rs1 %d(%08x), funct3 %d, imm %08x\n", instruction, rd, rs1, gprread(rs1), funct3, loadimm);
+        fprintf(logfile, "[LOAD] %08x : rd %d, rs1 %d(%08x), funct3 %x, imm %x\n", instruction, rd, rs1, gprread(rs1), funct3, loadimm);
         retval = load(rd, rs1, funct3, loadimm);
 
         gprnextpc();
@@ -86,7 +86,7 @@ int decodeandcall(unsigned int instruction) {
             funct3 = getfunct3(instruction),
             storeimm = getstoreimm(instruction);
         
-        fprintf(logfile, "[STORE] %08x : rs1 %d(%08x), rs2 %d(%08x), funct3 %d, imm %08x\n", instruction, rs1, gprread(rs1), rs2, gprread(rs2), funct3, storeimm);
+        fprintf(logfile, "[STORE] %08x : rs1 %d(%08x), rs2 %d(%08x), funct3 %x, imm %x\n", instruction, rs1, gprread(rs1), rs2, gprread(rs2), funct3, storeimm);
         retval = store(rs1, rs2, funct3, storeimm);
 
         gprnextpc();
@@ -96,7 +96,7 @@ int decodeandcall(unsigned int instruction) {
             rd = getrd(instruction),
             uimm = getuimm(instruction);
 
-        fprintf(logfile, "[LUI] %08x : rd %d, upperimm %d\n", instruction, rd, uimm);
+        fprintf(logfile, "[LUI] %08x : rd %d, upperimm %x\n", instruction, rd, uimm);
         retval = lui(rd, uimm);
 
         gprnextpc();
@@ -106,7 +106,7 @@ int decodeandcall(unsigned int instruction) {
             rd = getrd(instruction),
             uimm = getuimm(instruction);
 
-        fprintf(logfile, "[AUIPC] %08x : rd %d, upperimm %d\n", instruction, rd, uimm);
+        fprintf(logfile, "[AUIPC] %08x : rd %d, upperimm %x\n", instruction, rd, uimm);
         retval = auipc(rd, uimm);
 
         gprnextpc();
@@ -119,7 +119,7 @@ int decodeandcall(unsigned int instruction) {
         if (retval == ENOEXEC) {  // NOEXEC means nothing left to execute
             return ENOEXEC;       // this happens when jr ra is called with ra = 0
         }
-        printf("[ERROR] %s got retval = %d\n", __func__, retval);
+        printf("[ERROR] %s got retval = %x\n", __func__, retval);
         return(retval);
     }
 
