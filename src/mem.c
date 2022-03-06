@@ -49,7 +49,7 @@ int initmemory(unsigned int size, char *memfilename) {
 
 int memwrite32u(unsigned int address, unsigned int value) {
     if (address % wordalignment) {
-        fprintf(stdout, "[ERROR] mis-aligned address, %s called with address %08x\n", address);
+        fprintf(stdout, "[ERROR] mis-aligned address, %s called with address %08x\n", __func__, address);
         return EINVAL;
     }
 
