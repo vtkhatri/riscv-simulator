@@ -5,7 +5,7 @@
 #include "decode.h"
 #include "gprf.h"
 
-static debugtypet debugtype; 
+static debugtypet debugtype;
 
 void stripextension(char *filename) {
     char *end = filename + strlen(filename);
@@ -28,17 +28,18 @@ int handledebugtype(debugtypet debugtype) {
     case tracemem:
         fclose(logfile);
         memlogfile = fopen(logfilename, "a");
-        logfile = stdout;
+        logfile = fopen("/dev/null", "w");
         return EPERM;
     case tracegprf:
         fclose(logfile);
         gprflogfile = fopen(logfilename, "a");
-        logfile = stdout;
+        logfile = fopen("/dev/null", "w");
         return EPERM;
     case traceall:
         fclose(logfile);
         memlogfile = fopen(logfilename, "a");
         gprflogfile = memlogfile;
+        logfile = fopen("/dev/null", "w");
         return EPERM;
     default:
         fprintf(stderr, "[ERROR] debug type? %d", debugtype);
@@ -66,6 +67,7 @@ int mainloop(debugtypet debugtype) {
         retval = decodeandcall(instruction);
         if (retval == ENOEXEC) {
             fprintf(logfile, "[FIN] jr ra called with ra containing 0; pc = %08x\n", pc);
+            printgprf(stdout);
             return 0;
         }
     } while (retval == 0);
