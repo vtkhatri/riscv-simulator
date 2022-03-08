@@ -11,7 +11,7 @@ int branch(unsigned int rs1, unsigned int rs2,
     errno=0;
 
     if (brimm % 4) {
-        fprintf(logfile, "[ERROR] mis-aligned branch offset from current pc (%08x)", brimm);
+        fprintf(logfile, "[ERROR] mis-aligned branch offset (%08x) from current pc\n", brimm);
         return EFAULT;
     }
 
