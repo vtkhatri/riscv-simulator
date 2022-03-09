@@ -10,6 +10,7 @@ main:
     li a0, 1    # to stdout
     ecall
     li a7, 94   # exit
-    li a0, 666  # with code 666
+    # commented out to not stop makefile li a0, 7    # with code 7
+    li a0, 0    # with code 0
     ecall
     jr ra
