@@ -4,14 +4,25 @@ main:
     blt  a0, a1, signedless
     bltu a0, a1, less
 signedless:
-    jal less
+    jr ra
 less:
-    bgtu a0, a1, greater
-    bgt  a0, a1, signedgreater
-greater:
-    jal skip
+    bgeu  a0, a1, signedgreater
+    bge a0, a1, greater
 signedgreater:
-    jal skip
-skip:
+    jr ra
+greater:
+    addi a0, zero, -1
+    addi a1, zero, -2
+    blt  a0, a1, signedless
+    bltu a0, a1, negless
+negless:
+    addi a0, zero, 2
+    addi a1, zero, 2
+    blt a0, a1, signedless
+    bltu a0, a1, signedless
+    bge a0, a1, equal
+equal:
+    bge a0, a1, endref
+endref:
     addi ra, zero, 0
     jr ra
