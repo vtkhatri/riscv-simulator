@@ -40,7 +40,27 @@ int initmemory(unsigned int size, char *memfilename) {
             return errno;
         }
 
-        ram[ramaddress(addressint)] = valueint; // actually putting the value in ram
+        switch(addressint%4) {
+            case 0:
+                memwrite32u(addressint, valueint);
+                break;
+            case 1:
+                memwrite8u(addressint, valueint);
+                break;
+            case 2:
+                memwrite16u(addressint, valueint);
+                break;
+            case 3:
+                memwrite8u(addressint, valueint);
+                break;
+            default:
+                printf("wtf?\n");
+                exit(6969);
+                break;
+        }
+        if (addressint % 4 == 0) {
+            ram[ramaddress(addressint)] = valueint; // actually putting the value in ram
+        }
     }
 
     fclose(memfile);

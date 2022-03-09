@@ -7,6 +7,7 @@
 #include "branch.h"
 #include "mem.h"
 #include "gprf.h"
+#include "ecall.h"
 
 int decodeandcall(unsigned int instruction) {
     int retval = 0;
@@ -109,6 +110,11 @@ int decodeandcall(unsigned int instruction) {
         fprintf(logfile, "[AUIPC] %08x : rd %d, upperimm %x\n", instruction, rd, uimm);
         retval = auipc(rd, uimm);
 
+        gprnextpc();
+
+    } else if (check(instruction, ecallmask)) {
+        fprintf(logfile, "[ECALL] %08x : a7 %0d, a0 %0d, a1 %0d, a2 %0d\n", instruction, gprread(a7), gprread(a0), gprread(a1), gprread(a2));
+        retval = ecall();
         gprnextpc();
 
     } else {
