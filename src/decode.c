@@ -117,6 +117,10 @@ int decodeandcall(unsigned int instruction) {
         retval = ecall();
         gprnextpc();
 
+    } else if (instruction == 0) {
+        fprintf(logfile, "[TRAP] %08x : exiting with all zero instruction\n", instruction);
+        exit(0);
+
     } else {
         return EINVAL;
     }
