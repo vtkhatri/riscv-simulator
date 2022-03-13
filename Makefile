@@ -2,7 +2,6 @@
 
 SRCDIRS := src
 SRCS := $(shell find $(SRCDIRS) -name '*.c')
-# SRCS := src/rsim.c
 TESTDIRS := testcases
 TESTS := $(shell find $(TESTDIRS) -name '*.c')
 CASSS := $(TESTS:c=s)
