@@ -4,6 +4,8 @@
 #include "gprf.h"
 #include "mem.h"
 
+static char prevcmd;
+
 int loopcheck() {
     char cmd;
     char *address;
@@ -17,7 +19,11 @@ ttarget:
     dummy = fgets(input, sizeof(input)+1, stdin);
     // fprintf(stdout, "%s <- %s\n", dummy, input);
 
-    cmd = strtok(input, " \n")[0];
+    cmd = strtok(input, " ")[0];
+    if (cmd == '\n') {
+        cmd = prevcmd;
+    }
+    prevcmd = cmd;
     address = strtok(NULL, " \n");
 
     if (cmd == 'n') {
@@ -33,8 +39,10 @@ ttarget:
             fprintf(stdout, "ram[%08x] -> %08x\n", addressnum, memread32u(addressnum));
             goto ttarget;
         }
+    } else {
+        fprintf(stdout, "invalid input %c %s.\n", cmd, address);
+        goto ttarget;
     }
 
-    fprintf(stdout, "invalid input %c %s, continuing.\n", cmd, address);
     return 0;
 }
