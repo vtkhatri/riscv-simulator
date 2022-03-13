@@ -16,7 +16,7 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             gprwrite(rd, (int) gprread(rs1) + signextend(imm, regimmlength));
             break;
         case funct3shiftleftl:
-            gprwrite(rd, gprread(rs1) << getshamtfromimm(imm));
+            gprwrite(rd, gprread(rs1) << getshamt(imm));
             break;
         case funct3setlessthan:
             if ((int)gprread(rs1) < signextend(imm, regimmlength)) {
@@ -37,10 +37,10 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             break;
         case funct3shiftright:
             if (funct7 == funct7shiftrightl) {
-                gprwrite(rd, gprread(rs1) >> getshamtfromimm(imm));
+                gprwrite(rd, gprread(rs1) >> getshamt(imm));
             } else if (funct7 == funct7shiftrighta) {
                 int readval = gprread(rs1);
-                int shiftval = getshamtfromimm(imm);
+                int shiftval = getshamt(imm);
                 int towrite = readval >> shiftval;
                 gprwrite(rd, towrite);
             } else {

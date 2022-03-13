@@ -28,7 +28,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
                 long long temp = (int) gprread(rs1) * (int) gprread(rs2);
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
-                gprwrite(rd, gprread(rs1) << (gprread(rs2) & 127)); // lower 5-bits decide the shamt
+                gprwrite(rd, gprread(rs1) << getshamt(gprread(rs2))); // lower 5-bits decide the shamt
             } else {
                 fprintf(logfile, "[ERROR] %s - funct7 (%x) is illegal\n", __func__, funct7);
                 return EINVAL;
@@ -79,9 +79,9 @@ int registerregister(unsigned int rd, unsigned int rs1,
         case funct3shiftright:
             if (funct7 == funct7m) {
             } else if (funct7 == funct7shiftrightl) {
-                gprwrite(rd, (int) gprread(rs1) >> (gprread(rs2) & 127));
+                gprwrite(rd, (int) gprread(rs1) >> getshamt(gprread(rs2)));
             } else if (funct7 == funct7shiftrighta) {
-                gprwrite(rd, gprread(rs1) >> (gprread(rs2) & 127));
+                gprwrite(rd, gprread(rs1) >> getshamt(gprread(rs2)));
             } else {
                 fprintf(logfile, "[ERROR] %s - funct7 (%x) is illegal\n", __func__, funct7);
                 return EINVAL;

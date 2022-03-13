@@ -16,7 +16,7 @@
 
 #define registerimmediatemask 19 // 0010011
 #define getregimmimm(x) ((x) & (4095 << 20)) >> 20 // inst[31:20] = imm[11:0]
-#define getshamtfromimm(x) (x) & 31 // imm[4:0] = shift amount
+#define getshamt(x) (x) & 31 // imm[4:0] = shift amount
 
 #define funct3add          0 // 000
 #define funct3shiftleftl   1 // 001
