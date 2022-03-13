@@ -12,7 +12,8 @@ int registerregister(unsigned int rd, unsigned int rs1,
     switch(funct3) {
         case funct3add:
             if (funct7 == funct7sub) {
-                gprwrite(rd, gprread(rs1)-gprread(rs2));
+                unsigned int towrite = gprread(rs1) - gprread(rs2);
+                gprwrite(rd, towrite);
             } else if (funct7 == funct7m) {
                 long long temp = (int) gprread(rs1) * (int) gprread(rs2);
                 gprwrite(rd, temp & lower32mask);
@@ -39,7 +40,9 @@ int registerregister(unsigned int rd, unsigned int rs1,
                 long long temp = (int) gprread(rs1) * (unsigned int) gprread(rs2);
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
-                if ((int)gprread(rs1) < (int)gprread(rs2)) {
+                int val1 = gprread(rs1);
+                int val2 = gprread(rs2);
+                if (val1 < val2) {
                     gprwrite(rd, 1);
                 } else {
                     gprwrite(rd, 0);
@@ -79,9 +82,15 @@ int registerregister(unsigned int rd, unsigned int rs1,
         case funct3shiftright:
             if (funct7 == funct7m) {
             } else if (funct7 == funct7shiftrightl) {
-                gprwrite(rd, (int) gprread(rs1) >> getshamt(gprread(rs2)));
+                unsigned int readval = gprread(rs1);
+                int shiftval = getshamt(gprread(rs2));
+                unsigned int writeval = readval >> shiftval;
+                gprwrite(rd, writeval);
             } else if (funct7 == funct7shiftrighta) {
-                gprwrite(rd, gprread(rs1) >> getshamt(gprread(rs2)));
+                int readval = gprread(rs1);
+                int shiftval = getshamt(gprread(rs2));
+                int writeval = readval >> shiftval;
+                gprwrite(rd, writeval);
             } else {
                 fprintf(logfile, "[ERROR] %s - funct7 (%x) is illegal\n", __func__, funct7);
                 return EINVAL;
@@ -89,7 +98,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3or:
             if (funct7 == funct7m) {
-                gprwrite(rd, (int) gprread(rs1) % (int) gprread(rs2)); // TODO : copying sign of div to rem
+                gprwrite(rd, (int) gprread(rs1) % (int) gprread(rs2));
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) | gprread(rs2));
             } else {
