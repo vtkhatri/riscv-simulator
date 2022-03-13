@@ -16,7 +16,7 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             gprwrite(rd, (int) gprread(rs1) + signextend(imm, regimmlength));
             break;
         case funct3shiftleftl:
-            gprwrite(rd, gprread(rs1) << imm);
+            gprwrite(rd, gprread(rs1) << getshamtfromimm(imm));
             break;
         case funct3setlessthan:
             if ((int)gprread(rs1) < signextend(imm, regimmlength)) {
@@ -33,23 +33,26 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             }
             break;
         case funct3xor:
-            gprwrite(rd, gprread(rs1) ^ imm);
+            gprwrite(rd, gprread(rs1) ^ signextend(imm, regimmlength));
             break;
         case funct3shiftright:
             if (funct7 == funct7shiftrightl) {
-                gprwrite(rd, (int) gprread(rs1) >> getshamtfromimm(imm));
-            } else if (funct7 == funct7shiftrighta) {
                 gprwrite(rd, gprread(rs1) >> getshamtfromimm(imm));
+            } else if (funct7 == funct7shiftrighta) {
+                int readval = gprread(rs1);
+                int shiftval = getshamtfromimm(imm);
+                int towrite = readval >> shiftval;
+                gprwrite(rd, towrite);
             } else {
                 fprintf(logfile, "[ERROR] %s - funct3 for shift right has illegal funct7 field (%x)\n", __func__, funct7);
                 return EINVAL;
             }
             break;
         case funct3or:
-            gprwrite(rd, gprread(rs1) | imm);
+            gprwrite(rd, gprread(rs1) | signextend(imm, regimmlength));
             break;
         case funct3and:
-            gprwrite(rd, gprread(rs1) & imm);
+            gprwrite(rd, gprread(rs1) & signextend(imm, regimmlength));
             break;
         default:
             fprintf(logfile, "[ERROR] %s - funct3 (%x) does not match anything\n", __func__, funct3);
