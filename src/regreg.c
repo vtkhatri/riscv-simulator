@@ -15,7 +15,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
                 unsigned int towrite = gprread(rs1) - gprread(rs2);
                 gprwrite(rd, towrite);
             } else if (funct7 == funct7m) {
-                long long temp = (int) gprread(rs1) * (int) gprread(rs2);
+                long long temp = (long long) gprread(rs1) * (long long) gprread(rs2);
                 gprwrite(rd, temp & lower32mask);
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1)+gprread(rs2));
@@ -26,7 +26,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3shiftleftl:
             if (funct7 == funct7m) {
-                long long temp = (int) gprread(rs1) * (int) gprread(rs2);
+                long long temp = (long long) gprread(rs1) * (long long) gprread(rs2);
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) << getshamt(gprread(rs2))); // lower 5-bits decide the shamt
@@ -37,7 +37,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3setlessthan:
             if (funct7 == funct7m) {
-                long long temp = (int) gprread(rs1) * (unsigned int) gprread(rs2);
+                long long temp = (long long) gprread(rs1) * (unsigned long long) gprread(rs2);
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
                 int val1 = gprread(rs1);
@@ -55,7 +55,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3setlessthanu:
             if (funct7 == funct7m) {
-                long long temp = (unsigned int) gprread(rs1) * (unsigned int) gprread(rs2);
+                long long temp = (unsigned long long) gprread(rs1) * (unsigned long long) gprread(rs2);
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
                 if (gprread(rs1) < gprread(rs2)) {
@@ -71,7 +71,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3xor:
             if (funct7 == funct7m) {
-                gprwrite(rd, (int) gprread(rs1) / (int) gprread(rs2));
+                gprwrite(rd, (long long) gprread(rs1) / (long long) gprread(rs2));
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) ^ gprread(rs2));
             } else {
@@ -98,7 +98,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3or:
             if (funct7 == funct7m) {
-                gprwrite(rd, (int) gprread(rs1) % (int) gprread(rs2));
+                gprwrite(rd, (long long) gprread(rs1) % (long long) gprread(rs2));
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) | gprread(rs2));
             } else {
@@ -109,7 +109,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3and:
             if (funct7 == funct7m) {
-                gprwrite(rd, (unsigned int) gprread(rs1) % (unsigned int) gprread(rs2));
+                gprwrite(rd, (unsigned long long) gprread(rs1) % (unsigned long long) gprread(rs2));
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) & gprread(rs2));
             } else {
