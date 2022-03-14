@@ -25,7 +25,7 @@ int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
         gprwrite(rd, pc);
 
         #if(debug == all)
-        fprintf(logfile, "[JALR] saved pc %08x to %d register\n", gprgetpc()+4, rd);
+        fprintf(logfile, "[JALR] saved pc %08x to %d register\n", pc, rd);
         #endif
     }
 
