@@ -13,3 +13,7 @@ to change debugtype -
 * for gprf tracefiles - `gprf=1`
 * for gdb-like interface - `gdb=1`
 * for all trace dump - `all=1`
+
+### report
+
+[here](docs/report.md)
