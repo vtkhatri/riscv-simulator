@@ -17,7 +17,6 @@ ttarget:
     errno = 0;
     fprintf(stdout, "> ");
     dummy = fgets(input, sizeof(input)+1, stdin);
-    // fprintf(stdout, "%s <- %s\n", dummy, input);
 
     cmd = strtok(input, " ")[0];
     if (cmd == '\n') {
@@ -31,7 +30,7 @@ ttarget:
     } else if (cmd == 'c') {
         return EPERM; // eperm means don't need to check anything again, just complete execution.
     } else if (cmd == 'p') {
-        if (*address == 'g') {
+        if (address == NULL || *address == 'g') {
             printgprf(stdout);
             goto ttarget;
         } else {
