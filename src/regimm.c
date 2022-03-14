@@ -26,7 +26,7 @@ int registerimmediate(unsigned int rd, unsigned int rs1,
             }
             break;
         case funct3setlessthanu:
-            if (gprread(rs1) < imm) {
+            if (gprread(rs1) < signextend(imm, regimmlength)) {
                 gprwrite(rd, 1);
             } else {
                 gprwrite(rd, 0);
