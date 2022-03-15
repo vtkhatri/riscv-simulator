@@ -4,6 +4,13 @@
 
 #include "regimm.h"
 
+long long signextendmul(long long value) {
+    long long mask;
+    mask = 1U << (32 - 1);
+    value = value & ((1U << 32) - 1);
+    return (value ^ mask) - mask;
+}
+
 int registerregister(unsigned int rd, unsigned int rs1,
                      unsigned int rs2, unsigned int funct3,
                      unsigned int funct7) {
@@ -26,7 +33,10 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3shiftleftl:
             if (funct7 == funct7m) {
-                long long temp = (long long) gprread(rs1) * (long long) gprread(rs2);
+                long long op1 = signextendmul(gprread(rs1));
+                long long op2 = signextendmul(gprread(rs2));
+                long long temp = op1 * op2;
+                fprintf(logfile, "[MULEZDBG] signed signed %lld = %lld * %lld\n", temp, op1, op2);
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) << getshamt(gprread(rs2))); // lower 5-bits decide the shamt
@@ -37,7 +47,9 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3setlessthan:
             if (funct7 == funct7m) {
-                long long temp = (long long) gprread(rs1) * (unsigned long long) gprread(rs2);
+                long long op1 = signextendmul(gprread(rs1));
+                long long temp = op1 * (unsigned long long) gprread(rs2);
+                fprintf(logfile, "[MULEZDBG] signed unsigned %lld = %lld * %llu\n", temp, op1, (unsigned long long) gprread(rs2));
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
                 int val1 = gprread(rs1);
@@ -56,6 +68,7 @@ int registerregister(unsigned int rd, unsigned int rs1,
         case funct3setlessthanu:
             if (funct7 == funct7m) {
                 long long temp = (unsigned long long) gprread(rs1) * (unsigned long long) gprread(rs2);
+                fprintf(logfile, "[MULEZDBG] unsigned unsigned %llu = %llu * %llu\n", temp, (unsigned long long) gprread(rs1), (unsigned long long) gprread(rs2));
                 gprwrite(rd, (temp & upper32mask) >> 32);
             } else if (funct7 == funct7normal) {
                 if (gprread(rs1) < gprread(rs2)) {
