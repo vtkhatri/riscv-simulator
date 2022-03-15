@@ -15,9 +15,8 @@
 
 ## Testcases
 
-- [x] Branch
-- [x] Register Register
 - [x] Register Immediate
+- [x] Branch
 - [x] Register Register
 - [x] Ecall
 - [x] Memory operations
