@@ -119,6 +119,7 @@ int decodeandcall(unsigned int instruction) {
 
     } else if (instruction == 0) {
         fprintf(logfile, "[TRAP] %08x : exiting with all zero instruction\n", instruction);
+        printgprf(stdout);
         exit(0);
 
     } else {
