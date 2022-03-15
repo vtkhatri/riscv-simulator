@@ -7,4 +7,10 @@ main:
 	li a7, 2
 	mulhu s2, a6, a7
 	mulhsu s3, a6, a7
+	li s8, -11
+	li s9, 3
+	div s10, s8, s9
+	divu s11, s8, s9
+	rem t3, s8, s9
+	remu t4, s8, s9
 	jr ra

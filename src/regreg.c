@@ -7,7 +7,7 @@
 long long signextendmul(long long value) {
     long long mask;
     mask = 1U << (32 - 1);
-    value = value & ((1U << 32) - 1);
+    value = value & (((long long)1U << 32) - 1);
     return (value ^ mask) - mask;
 }
 
@@ -84,7 +84,11 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3xor:
             if (funct7 == funct7m) {
-                gprwrite(rd, (long long) gprread(rs1) / (long long) gprread(rs2));
+                long long dividend = (long long) signextendmul(gprread(rs1));
+                long long divisor = (long long) gprread(rs2);
+                long long temp = dividend / divisor;
+                fprintf(logfile, "[DIVEZDBG] sign %lld = %lld / %llu\n", temp, dividend, divisor);
+                gprwrite(rd, temp);
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) ^ gprread(rs2));
             } else {
@@ -94,6 +98,9 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3shiftright:
             if (funct7 == funct7m) {
+                unsigned int temp = gprread(rs1) / gprread(rs2);
+                fprintf(logfile, "[DIVEZDBG] usign %u = %u / %u\n", temp, gprread(rs1), gprread(rs2));
+                gprwrite(rd, temp);
             } else if (funct7 == funct7shiftrightl) {
                 unsigned int readval = gprread(rs1);
                 int shiftval = getshamt(gprread(rs2));
@@ -111,7 +118,11 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3or:
             if (funct7 == funct7m) {
-                gprwrite(rd, (long long) gprread(rs1) % (long long) gprread(rs2));
+                long long dividend = (long long) signextendmul(gprread(rs1));
+                long long divisor = (long long) gprread(rs2);
+                long long temp = dividend % divisor;
+                fprintf(logfile, "[DIVEZDBG] sign %lld = %lld rem %llu\n", temp, dividend, divisor);
+                gprwrite(rd, temp);
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) | gprread(rs2));
             } else {
@@ -122,7 +133,9 @@ int registerregister(unsigned int rd, unsigned int rs1,
             break;
         case funct3and:
             if (funct7 == funct7m) {
-                gprwrite(rd, (unsigned long long) gprread(rs1) % (unsigned long long) gprread(rs2));
+                unsigned int temp = (gprread(rs1)) % gprread(rs2);
+                fprintf(logfile, "[DIVEZDBG] usign %u = %u rem %u\n", temp, gprread(rs1), gprread(rs2));
+                gprwrite(rd, temp);
             } else if (funct7 == funct7normal) {
                 gprwrite(rd, gprread(rs1) & gprread(rs2));
             } else {
