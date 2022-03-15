@@ -39,7 +39,8 @@ int handledebugtype(debugtypet debugtype) {
         fclose(logfile);
         memlogfile = fopen(logfilename, "a");
         gprflogfile = memlogfile;
-        logfile = fopen("/dev/null", "w");
+        logfile = memlogfile;
+        // logfile = fopen("/dev/null", "w");
         return EPERM;
     default:
         fprintf(stderr, "[ERROR] debug type? %d", debugtype);

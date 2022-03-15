@@ -18,15 +18,11 @@ int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
 
     // deciding if to save current PC
     if (rd == zero) {
-        #if(debug == all)
         fprintf(logfile, "[JALR] no linking, just jump\n");
-        #endif
     } else {
         gprwrite(rd, pc);
 
-        #if(debug == all)
         fprintf(logfile, "[JALR] saved pc %08x to %d register\n", pc, rd);
-        #endif
     }
 
     if (gprread(rs1) % 4) {
@@ -45,15 +41,11 @@ int jumpandlink(unsigned int rd, unsigned int jalimm) {
 
     // deciding if to save current PC
     if (rd == zero) {
-        #if(debug == all)
         fprintf(logfile, "[JAL] no linking, just jump\n");
-        #endif
     } else {
         gprwrite(rd, gprgetpc()+4);
 
-        #if(debug == all)
         fprintf(logfile, "[JAL] saved pc %08x to %d register\n", gprgetpc()+4, rd);
-        #endif
     }
 
     if (jalimm % 4) {
