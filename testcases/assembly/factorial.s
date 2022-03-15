@@ -1,3 +1,5 @@
+    addi s10, zero, 10
+    jr ra
 factorial:
     addi sp, sp, -8 # save regs
     sw a0, 4( sp )
@@ -17,9 +19,11 @@ else:
     jr ra # return
 main:
     addi sp, sp, -4
-    sw ra, 0(sp)
+    sw ra, 0(sp)     # storing return address
     addi a0, zero, 6 # !6 = 720
     jal factorial
+    li s11, 0        # simple test for jalr
+    jalr s11, 0      # can it go to code and return properly
+    lw ra, 0(sp)     # restoring return address
     addi sp, sp, 4
-    lw ra, -4(sp)
     jr ra
