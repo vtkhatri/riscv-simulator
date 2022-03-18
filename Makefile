@@ -1,5 +1,10 @@
 .PHONY: all clean test testfiles memfiles build
 
+CC := clang
+ifeq (, $(shell which clang))
+	CC = gcc
+endif
+
 SRCDIRS := src
 SRCS := $(shell find $(SRCDIRS) -name '*.c')
 TESTDIRS := testcases
@@ -41,7 +46,7 @@ GREPCLEAN := grep -o '^[[:blank:]]*[[:xdigit:]]*:[[:blank:]][[:xdigit:]]*'
 GETPC := awk '/<main>:/ {print $$1}'
 
 EXEC := ./rsim # Risc-v SIMulator -> rsim
-CCARGS := -g
+CCARGS := -g -O3
 
 ifdef debug # allows us to dynamically define a pre-processor directive from make command-line
 	CCARGS += -D debug=$(debug)
