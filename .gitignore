@@ -2,6 +2,7 @@
 rsim
 testcases/c/*.s
 testcases/*/*.o
-testcases/*/*.mem
+testcases/assembly/*.mem
+testcases/c/*.mem
 testcases/*/*.log
 testcases/*/*.pc

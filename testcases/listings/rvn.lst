@@ -1,0 +1,729 @@
+GAS LISTING rvn.s 			page 1
+
+
+   1              	#
+   2              	#
+   3              	#	Test cases for RISC-V.
+   4              	#
+   5              	#	In general put PC of test into s0 and go to halt if a test fails
+   6              	#
+   7              	#
+   8              	#
+   9              	## new version -- fixed sltiu
+  10              	## missing: backward branches!
+  11
+  12
+  13              		.section .text
+  14              		.align	2
+  15              		.globl	caller
+  16
+  17              	caller:
+  18 0000 17040000 		auipc s0, 0			# s0 = PC	check starting PC correct
+  19 0004 17040000 		auipc s0, 0			# s0 = PC   and that auipc works -- we use it
+  20 0008 00000000 		.word 0				# force halt
+  21              	start:
+  22              							# override PC to start here (12)
+  23
+  24
+  25              	#
+  26              	#	Check conditional branches
+  27              	#
+  28
+  29              	l1:
+  30 000c 33030000 		add t1, zero, zero		# t1 = 0
+  31 0010 17040000 		auipc s0, 0
+  32 0014 63120368 		bne t1, zero, halt		# bne t1, zero
+  33 0018 63040300 		beq t1, zero, l2		# beq t1, zero
+  34 001c 00000000 		.word 0
+  35
+  36              	l2:
+  37 0020 33030000 		add t1, zero, zero		#  t1 = 0
+  38 0024 B3030000 		add t2, zero, zero		#  t2 = 0
+  39
+  40 0028 17040000 		auipc s0, 0
+  41 002c 63167366 		bne t1, t2, halt		# bne t1, t2
+  42 0030 63047300 		beq t1, t2, l3			# beq t1, t2
+  43 0034 00000000 		.word 0
+  44
+  45              	#
+  46              	#
+  47              	#
+  48
+  49              	l3:
+  50 0038 13031000 		addi t1, zero, 1		# t1 = 1
+  51 003c B3030300 		add  t2, t1, zero		# t2 = 1
+  52
+  53 0040 17040000 		auipc s0, 0
+  54 0044 631A7364 		bne t1, t2, halt		# bne t1, t2
+  55
+  56 0048 17040000 		auipc s0, 0
+  57 004c 63966364 		bne t2, t1, halt		# bne t2, t1
+
+GAS LISTING rvn.s 			page 2
+
+
+  58
+  59 0050 17040000 		auipc s0, 0
+  60 0054 63C26364 		blt t2, t1, halt		# blt t2, t1
+  61
+  62 0058 17040000 		auipc s0, 0
+  63 005c 634E7362 		blt t1, t2, halt		# blt t1, t2
+  64
+  65 0060 17040000 		auipc s0, 0
+  66 0064 63CA6362 		blt t2, t1, halt		# blt t2, t1
+  67
+  68 0068 17040000 		auipc s0, 0
+  69 006c 63667362 		bltu t1, t2, halt		# bltu t1, t2
+  70
+  71 0070 17040000 		auipc s0, 0
+  72 0074 63E26362 		bltu t2, t1, halt		# bltu t2, t1
+  73
+  74 0078 17040000 		auipc s0, 0
+  75 007c 63047300 		beq t1, t2, l4			# beq t1, t2
+  76 0080 00000000 		.word 0
+  77
+  78              	l4:
+  79 0084 17040000 		auipc s0, 0
+  80 0088 63547300 		bge t1, t2, l5			# bge t1, t2
+  81 008c 00000000 		.word 0
+  82
+  83              	l5:
+  84 0090 17040000 		auipc s0, 0
+  85 0094 63747300 		bgeu t1, t2, l6			# bgeu t1, t2
+  86 0098 00000000 		.word 0
+  87
+  88              	#
+  89              	#
+  90              	#
+  91
+  92              	l6:
+  93 009c 33030000 		add t1, zero, zero		# t1 = 0
+  94 00a0 93031000 		addi t2, zero, 1		# t2 = 1
+  95 00a4 17040000 		auipc s0, 0
+  96 00a8 6308735E 		beq t1, t2, halt		# beq t1, t2
+  97
+  98 00ac 17040000 		auipc s0, 0
+  99 00b0 63C4635E 		blt t2, t1, halt		# blt t2, t1
+ 100 00b4 63447300 		blt t1, t2, l7			# blt t1, t2
+ 101 00b8 00000000 		.word 0
+ 102
+ 103              	l7:
+ 104 00bc 17040000 		auipc s0, 0
+ 105 00c0 63EC635C 		bltu t2, t1, halt		# bltu t2, t1
+ 106 00c4 63647300 		bltu t1, t2, l8			# bltu t1, t2
+ 107 00c8 00000000 		.word 0
+ 108
+ 109              	l8:
+ 110 00cc 17040000 		auipc s0, 0
+ 111 00d0 6354735C 		bge t1, t2, halt		# bge t1, t2
+ 112 00d4 63D46300 		bge t2, t1, l9			# bge t2, t1
+ 113 00d8 00000000 		.word 0
+ 114
+
+GAS LISTING rvn.s 			page 3
+
+
+ 115              	l9:
+ 116 00dc 17040000 		auipc s0, 0
+ 117 00e0 637C735A 		bgeu t1, t2, halt		# bgeu t1, t2
+ 118 00e4 63F46300 		bgeu t2, t1, l10		# bgeu t2, t1
+ 119 00e8 00000000 		.word 0
+ 120
+ 121              	#	auipc s0, 0
+ 122              	#	bne t1, t2, l10			# bne t1, t2
+ 123              	#	.word 0
+ 124
+ 125              	#
+ 126              	#
+ 127              	#
+ 128
+ 129              	l10:
+ 130 00ec 1303F0FF 		addi t1, zero, -1		# t1 = -1
+ 131 00f0 93031000 		addi t2, zero, 1		# t2 = +1
+ 132
+ 133 00f4 17040000 		auipc s0, 0
+ 134 00f8 63C0635A 		blt t2, t1, halt		# blt t2, t1
+ 135 00fc 63447300 		blt t1, t2, l11			# blt t1, t2
+ 136 0100 00000000 		.word 0
+ 137
+ 138              	l11:
+ 139 0104 635A7358 		bge t1, t2, halt		# bge t1, t2
+ 140 0108 63D46300 		bge t2, t1, l12			# bge t2, t1
+ 141 010c 00000000 		.word 0
+ 142
+ 143              	l12:
+ 144 0110 17040000 		auipc s0, 0
+ 145 0114 63F26358 		bgeu t2, t1, halt		# bgeu t2, t1
+ 146 0118 63747300 		bgeu t1, t2, l13		# bgeu t1, t2
+ 147 011c 00000000 		.word 0
+ 148
+ 149              	l13:
+ 150 0120 17040000 		auipc s0, 0
+ 151 0124 636A7356 		bltu t1, t2, halt		# bltu t1, t2
+ 152 0128 63E46300 		bltu t2, t1, l14		# bltu t2, t1
+ 153 012c 00000000 		.word 0
+ 154
+ 155
+ 156              	l14:
+ 157 0130 1303F0FF 		add t1, zero, -1		# t1 = -1
+ 158 0134 9303E0FF 		addi t2, zero, -2		# t2 = -2
+ 159 0138 17040000 		auipc s0, 0
+ 160 013c 63DE6354 		bge t2, t1, halt		# bge t2, t1
+ 161 0140 63547300 		bge t1, t2, l15			# bge t1, t2
+ 162 0144 00000000 		.word 0
+ 163
+ 164              	l15:
+ 165 0148 17040000 		auipc s0, 0
+ 166 014c 63467354 		blt t1, t2, halt		# blt t1, t2
+ 167 0150 63C46300 		blt t2, t1, l16			# blt t2, t1
+ 168 0154 00000000 		.word 0
+ 169
+ 170              	l16:
+ 171 0158 17040000 		auipc s0, 0
+
+GAS LISTING rvn.s 			page 4
+
+
+ 172 015c 63FE6352 		bgeu t2, t1, halt		# bgeu t2, t1
+ 173 0160 63747300 		bgeu t1, t2, l17		# bgeu t1, t2
+ 174 0164 00000000 		.word 0
+ 175
+ 176              	l17:
+ 177 0168 17040000 		auipc s0, 0
+ 178 016c 63667352 		bltu t1, t2, halt		# bltu t1, t2
+ 179 0170 63E46300 		bltu t2, t1, l18		# bltu t2, t1
+ 180 0174 00000000 		.word 0
+ 181
+ 182              	#
+ 183              	#	Check slt, sltu, slti, sltiu
+ 184              	#
+ 185              	l18:
+ 186 0178 1303E0FF 		addi t1, zero, -2		# t1 = -2
+ 187 017c 93031000 		addi t2, zero, 1		# t2 = +1
+ 188
+ 189 0180 17040000 		auipc s0, 0
+ 190 0184 332E7300 		slt t3, t1,t2			# slt t1 < t2
+ 191 0188 63080E50 		beq t3, zero, halt		# error if not set
+ 192
+ 193 018c 17040000 		auipc s0, 0
+ 194 0190 33AE6300 		slt t3, t2, t1			# slt t2 < t1
+ 195 0194 63120E50 		bne t3, zero, halt		# error set
+ 196
+ 197 0198 17040000 		auipc s0, 0
+ 198 019c 33BE6300 		sltu t3, t2, t1			# sltu t2, t1
+ 199 01a0 630C0E4E 		beq t3, zero, halt		# error if not set
+ 200
+ 201 01a4 17040000 		auipc s0, 0
+ 202 01a8 132EF3FF 		slti t3, t1, -1			# slti t1, -1
+ 203 01ac 63060E4E 		beq t3, zero, halt		# error if not set
+ 204
+ 205 01b0 17040000 		auipc s0, 0
+ 206 01b4 132ED3FF 		slti t3, t1, -3			# slti t1, -3
+ 207 01b8 63100E4E 		bne t3, zero, halt		# error if  set
+ 208
+ 209 01bc 17040000 		auipc s0, 0
+ 210 01c0 132E1300 		slti t3, t1, 1			# slti t1, 1
+ 211 01c4 630A0E4C 		beq t3, zero, halt		# error if not set
+ 212
+ 213 01c8 17040000 		auipc s0, 0
+ 214 01cc 13AE2300 		slti t3, t2, 2			# slti t2, 2
+ 215 01d0 63040E4C 		beq t3, zero, halt		# error if not set
+ 216
+ 217 01d4 17040000 		auipc  s0, 0
+ 218 01d8 13AEF3FF 		slti t3, t2, -1			# slti t2, -1
+ 219 01dc 631E0E4A 		bne t3, zero, halt		# error if set
+ 220
+ 221              	#  sltiu sign extends the immediate -- then treats as unsigned
+ 222
+ 223 01e0 17040000 		auipc s0, 0
+ 224 01e4 133E1300 		sltiu t3, t1, 1			# sltiu t1, 1
+ 225 01e8 63180E4A 		bne t3, zero, halt		# error if set
+ 226
+ 227 01ec 17040000 		auipc s0, 0
+ 228 01f0 13030040 		addi t1, zero, 1024
+
+GAS LISTING rvn.s 			page 5
+
+
+ 229 01f4 13030340 		addi t1, t1, 1024
+ 230 01f8 13030340 		addi t1, t1, 1024
+ 231 01fc 13030340 		addi t1, t1, 1024		# t1 = 4096
+ 232 0200 133EF3FF 		sltiu t3, t1, -1		# sltiu t1, -1
+ 233 0204 630A0E48 		beq t3, zero, halt		# error if  not set
+ 234
+ 235 0208 1303F3FF 		addi t1, t1, -1			# t1 = 4095
+ 236 020c 17040000 		auipc s0, 0
+ 237 0210 133EF3FF 		sltiu t3, t1, -1		# sltiu t1, -1
+ 238 0214 63020E48 		beq t3, zero, halt		# error if  not set
+ 239
+ 240 0218 17040000 		auipc s0, 0
+ 241 021c 133E1300 		sltiu t3, t1, 1			# sltiu t1, 1
+ 242 0220 631C0E46 		bne t3, zero, halt		# error if set
+ 243
+ 244 0224 9303F0FF 		addi t2, zero, -1
+ 245 0228 17040000 		auipc s0, 0
+ 246 022c 13BE2300 		sltiu t3, t2, 2			# sltiu t2, 2
+ 247 0230 63140E46 		bne t3, zero, halt		# error if  set
+ 248
+ 249 0234 17040000 		auipc  s0, 0
+ 250 0238 13BEF3FF 		sltiu t3, t2, -1		# sltiu t2, -1
+ 251 023c 631E0E44 		bne t3, zero, halt		# error if  set
+ 252
+ 253
+ 254              	#
+ 255              	#	Check lui before using in shift and load/store checking
+ 256              	#
+ 257
+ 258 0240 9303F0FF 		addi t2, zero, -1		# 0xFFFFFFFF
+ 259 0244 130EF07F 		addi t3, zero, 0x7FF	# 0x00000FFF
+ 260 0248 130EFE7F 		addi t3, t3  , 0x7FF	# 0x00000FFF
+ 261 024c 130E1E00 		addi t3, t3, 1			# t3 = 0x00000FFF
+ 262 0250 B383C341 		sub t2, t2, t3			# t2 = 0xFFFFF000
+ 263
+ 264 0254 17040000 		auipc s0, 0
+ 265 0258 13030E00 		mv t1, t3				# t1 = 0x00000FFF
+ 266 025c 37F3FFFF 		lui t1, 0xFFFFF			# should write to upper 20, clear lower 12
+ 267 0260 631C7342 		bne t1, t2, halt		# lui failed
+ 268
+ 269
+ 270              	# should form -1
+ 271
+ 272 0264 17040000 		auipc s0, 0
+ 273 0268 1303F0FF 		li t1, 0xFFFFFFFF		# all 1s
+ 274 026c 13031300 		addi t1, t1, 1
+ 275 0270 63140342 		bne t1, zero, halt		# li (lui/addi) failed
+ 276
+ 277 0274 17040000 		auipc s0, 0
+ 278 0278 1363F0FF 		ori t1, zero, -1		# sign extension!
+ 279 027c 13031300 		addi t1, t1, 1
+ 280 0280 631C0340 		bne t1, zero, halt
+ 281
+ 282
+ 283              	#
+ 284              	# shifts
+ 285              	#
+
+GAS LISTING rvn.s 			page 6
+
+
+ 286
+ 287              	# sra, srl, sll should only use least significant 5 bits of rs2 for shift!
+ 288              	# use 0x23 = 35 (100011) as shift amount for error checking
+ 289              	# update: looks like assembler catches this -- use 3
+ 290
+ 291 0284 93033000 		addi t2, zero, 3		# t2 = 35 (shift amount)
+ 292
+ 293 0288 13031000 		addi t1, zero, 0x1		# t1 = 1
+ 294 028c 17040000 		auipc s0, 0
+ 295 0290 331E7300 		sll t3, t1, t2			# should shift by only three positions
+ 296 0294 930E8000 		addi t4, zero, 0x8
+ 297 0298 6310DE41 		bne t3, t4, halt		# error if t3 != 8
+ 298
+ 299 029c 37030080 		li t1, 0x80000000		#  (1 in MSB)
+ 300 02a0 17040000 		auipc s0, 0
+ 301 02a4 335E7300 		srl t3, t1, t2			# shift right by only three positions
+ 302 02a8 B70E0010 		li t4, 0x10000000		#  (shifted three)
+ 303 02ac 6316DE3F 		bne t3, t4, halt
+ 304
+ 305 02b0 37030080 		li t1, 0x80000000		#  (1 in MSB)
+ 306 02b4 17040000 		auipc s0, 0
+ 307 02b8 335E7340 		sra t3, t1, t2			# shift right by only three positions
+ 308 02bc B70E00F0 		li t4, 0xF0000000		#  (arithmetic shifted three)
+ 309 02c0 631CDE3D 		bne t3, t4, halt
+ 310
+ 311 02c4 37030070 		li t1, 0x70000000		#  (1 in MSB-1)
+ 312 02c8 17040000 		auipc s0, 0
+ 313 02cc 335E7340 		sra t3, t1, t2			# shift right by only three positions
+ 314 02d0 B70E000E 		li t4, 0x0E000000		#  (arithmetic shifted three)
+ 315 02d4 6312DE3D 		bne t3, t4, halt
+ 316
+ 317              	# immediate versions
+ 318
+ 319 02d8 13031000 		addi t1, zero, 0x1		# t1 = 1
+ 320 02dc 17040000 		auipc s0, 0
+ 321 02e0 131E3300 		slli t3, t1, 3			# should shift by only three positions
+ 322 02e4 930E8000 		addi t4, zero, 0x8
+ 323 02e8 6318DE3B 		bne t3, t4, halt		# error if t3 != 8
+ 324
+ 325 02ec 37030080 		li t1, 0x80000000		#  (1 in MSB)
+ 326 02f0 17040000 		auipc s0, 0
+ 327 02f4 135E3300 		srli t3, t1, 3			# shift right by only three positions
+ 328 02f8 B70E0010 		li t4, 0x10000000		#  (shifted three)
+ 329 02fc 631EDE39 		bne t3, t4, halt
+ 330
+ 331 0300 37030080 		li t1, 0x80000000		#  (1 in MSB)
+ 332 0304 17040000 		auipc s0, 0
+ 333 0308 135E3340 		srai t3, t1, 3			# shift right by only three positions
+ 334 030c B70E00F0 		li t4, 0xF0000000		#  (arithmetic shifted three)
+ 335 0310 6314DE39 		bne t3, t4, halt
+ 336
+ 337 0314 37030070 		li t1, 0x70000000		#  (1 in MSB-1)
+ 338 0318 17040000 		auipc s0, 0
+ 339 031c 135E3340 		srai t3, t1, 3			# shift right by only three positions
+ 340 0320 B70E000E 		li t4, 0x0E000000		#  (arithmetic shifted three)
+ 341 0324 631ADE37 		bne t3, t4, halt
+ 342
+
+GAS LISTING rvn.s 			page 7
+
+
+ 343
+ 344
+ 345
+ 346              	#
+ 347              	#	Check load and store
+ 348              	#
+ 349
+ 350              	# rely on sp being initialized
+ 351              	# rely on branch instructions working
+ 352
+ 353 0328 37010100 		li sp, 0x0FFFC			# 64K - 4  =  0x0FFFC  (was 0x10000)
+ 353      1301C1FF
+ 354 0330 93040100 		mv s1, sp				# all of these should work with any base reg
+ 355
+ 356 0334 17040000 		auipc s0, 0				# simple sw/lw
+ 357 0338 1303F0FF 		li t1, 0xFFFFFFFF
+ 358 033c 23A06400 		sw t1, 0(s1)
+ 359 0340 83A30400 		lw t2, 0(s1)
+ 360 0344 631A7334 		bne t1,t2, halt
+ 361
+ 362 0348 1303F00F 		li t1, 0xFF
+ 363 034c 23AE64FE 		sw t1, -4(s1)
+ 364 0350 1303F007 		li t1, 0x7F
+ 365 0354 23AC64FE 		sw t1, -8(s1)
+ 366 0358 37030100 		li t1, 0xFFFF
+ 366      1303F3FF
+ 367 0360 23AA64FE 		sw t1, -12(s1)
+ 368 0364 37830000 		li t1, 0x7FFF
+ 368      1303F3FF
+ 369 036c 23A864FE 		sw t1, -16(s1)
+ 370 0370 23A604FE 		sw zero, -20(s1)
+ 371
+ 372 0374 17040000 		auipc s0, 0
+ 373 0378 930300F0 		li t2, 0xFFFFFF00			# check lb sign extends
+ 374 037c 838384FF 		lb t2, -8(s1)
+ 375 0380 1303F007 		li t1, 0x7F
+ 376 0384 631A7330 		bne t1, t2, halt
+ 377
+ 378 0388 17040000 		auipc s0, 0
+ 379 038c 93030000 		mv t2, zero					# check lb sign extends
+ 380 0390 8383C4FF 		lb t2, -4(s1)
+ 381 0394 1303F0FF 		li t1, 0xFFFFFFFF
+ 382 0398 63107330 		bne t1, t2, halt
+ 383
+ 384 039c 17040000 		auipc s0, 0
+ 385 03a0 B703FFFF 		li t2, 0xFFFF0000			# check lh sign extends
+ 386 03a4 839304FF 		lh t2, -16(s1)
+ 387 03a8 37830000 		li t1, 0x7FFF
+ 387      1303F3FF
+ 388 03b0 6314732E 		bne t1, t2, halt
+ 389
+ 390 03b4 17040000 		auipc s0, 0
+ 391 03b8 93030000 		mv t2, zero					# check lh sign extends
+ 392 03bc 839344FF 		lh t2, -12(s1)
+ 393 03c0 1303F0FF 		li t1, 0xFFFFFFFF
+ 394 03c4 631A732C 		bne t1, t2, halt
+ 395
+
+GAS LISTING rvn.s 			page 8
+
+
+ 396 03c8 17040000 		auipc s0, 0					# lbu should zero extend
+ 397 03cc 930300F0 		li t2, 0xFFFFFF00
+ 398 03d0 83C3C4FF 		lbu t2, -4(s1)
+ 399 03d4 1303F00F 		li t1, 0xFF
+ 400 03d8 6310732C 		bne t1, t2, halt
+ 401
+ 402 03dc 17040000 		auipc s0, 0					# lhu should zero extend
+ 403 03e0 B703FFFF 		li t2, 0xFFFF0000
+ 404 03e4 83D344FF 		lhu t2, -12(s1)
+ 405 03e8 37030100 		li t1, 0x0000FFFF
+ 405      1303F3FF
+ 406 03f0 6314732A 		bne t1, t2, halt
+ 407
+ 408 03f4 17040000 		auipc s0, 0					# sb with MSB 0
+ 409 03f8 23A604FE 		sw zero, -20(s1)
+ 410 03fc 130350F5 		li t1, 0xFFFFFF55
+ 411 0400 238664FE 		sb t1, -20(s1)
+ 412 0404 83A3C4FE 		lw t2, -20(s1)
+ 413 0408 13035005 		li t1, 0x55
+ 414 040c 63167328 		bne t1, t2, halt
+ 415
+ 416 0410 17040000 		auipc s0, 0				# sb with MSB 1
+ 417 0414 23A604FE 		sw zero, -20(s1)
+ 418 0418 1303A0FA 		li t1, 0xFFFFFFAA
+ 419 041c 238664FE 		sb t1, -20(s1)
+ 420 0420 83A3C4FE 		lw t2, -20(s1)
+ 421 0424 1303A00A 		li t1, 0xAA
+ 422 0428 63187326 		bne t1, t2, halt
+ 423
+ 424
+ 425 042c 17040000 		auipc s0, 0					# sh with MSB 0
+ 426 0430 23A604FE 		sw zero, -20(s1)
+ 427 0434 3753FFFF 		li t1, 0xFFFF5555
+ 427      13035355
+ 428 043c 239664FE 		sh t1, -20(s1)
+ 429 0440 83A3C4FE 		lw t2, -20(s1)
+ 430 0444 37530000 		li t1, 0x5555
+ 430      13035355
+ 431 044c 63167324 		bne t1, t2, halt
+ 432
+ 433 0450 17040000 		auipc s0, 0				# sh with MSB 1
+ 434 0454 23A604FE 		sw zero, -20(s1)
+ 435 0458 37B3FFFF 		li t1, 0xFFFFAAAA
+ 435      1303A3AA
+ 436 0460 239664FE 		sh t1, -20(s1)
+ 437 0464 83A3C4FE 		lw t2, -20(s1)
+ 438 0468 37B30000 		li t1, 0xAAAA
+ 438      1303A3AA
+ 439 0470 63147322 		bne t1, t2, halt
+ 440
+ 441
+ 442              	# check  sb with byte addressing
+ 443
+ 444 0474 17040000 		auipc s0, 0
+ 445 0478 23A604FE 		sw zero, -20(s1)
+ 446 047c 13033003 		li t1, 0x33
+ 447 0480 238664FE 		sb t1, -20(s1)
+
+GAS LISTING rvn.s 			page 9
+
+
+ 448 0484 13035005 		li t1, 0x55
+ 449 0488 A38664FE 		sb t1, -19(s1)
+ 450 048c 1303A00A 		li t1, 0xAA
+ 451 0490 238764FE 		sb t1, -18(s1)
+ 452 0494 1303C00C 		li t1, 0xCC
+ 453 0498 A38764FE 		sb t1, -17(s1)
+ 454 049c 83A3C4FE 		lw t2, -20(s1)
+ 455 04a0 3753AACC 		li t1, 0xCCAA5533
+ 455      13033353
+ 456 04a8 6318731E 		bne t1, t2, halt
+ 457
+ 458
+ 459              	# check  sh with byte addressing
+ 460
+ 461 04ac 17040000 		auipc s0, 0
+ 462 04b0 23A604FE 		sw zero, -20(s1)
+ 463 04b4 37330000 		li t1, 0x3355
+ 463      13035335
+ 464 04bc 239664FE 		sh t1, -20(s1)
+ 465 04c0 37B30000 		li t1, 0xAACC
+ 465      1303C3AC
+ 466 04c8 239764FE 		sh t1, -18(s1)
+ 467 04cc 83A3C4FE 		lw t2, -20(s1)
+ 468 04d0 3733CCAA 		li t1, 0xAACC3355
+ 468      13035335
+ 469 04d8 6310731C 		bne t1, t2, halt
+ 470
+ 471
+ 472              	# check for positive displacement, too
+ 473
+ 474 04dc 17040000 		auipc s0, 0
+ 475 04e0 9304C1FE 		addi s1,sp,-20
+ 476 04e4 93030000 		mv t2, zero
+ 477 04e8 23A67400 		sw t2, 12(s1)
+ 478 04ec 1303F0FF 		li t1, 0xFFFFFFFF
+ 479 04f0 23A66400 		sw t1, 12(s1)
+ 480 04f4 83A3C400 		lw t2, 12(s1)
+ 481 04f8 6310731A 		bne t1,t2, halt
+ 482
+ 483
+ 484              	#
+ 485              	#	Check basic ALU: logical operations
+ 486              	#
+ 487
+ 488 04fc 17040000 		auipc s0, 0				# or
+ 489 0500 370301FF 		li t1, 0xFF00FF00
+ 489      130303F0
+ 490 0508 B70300FF 		li t2, 0xFF0000FF
+ 490      9383F30F
+ 491 0510 B70E01FF 		li t4, 0xFF00FFFF
+ 491      938EFEFF
+ 492 0518 336E7300 		or t3, t1, t2
+ 493 051c 631EDE17 		bne t3, t4, halt
+ 494
+ 495 0520 17040000 		auipc s0, 0				# and
+ 496 0524 370301FF 		li t1, 0xFF00FF00
+ 496      130303F0
+
+GAS LISTING rvn.s 			page 10
+
+
+ 497 052c B70300FF 		li t2, 0xFF0000FF
+ 497      9383F30F
+ 498 0534 B70E00FF 		li t4, 0xFF000000
+ 499 0538 337E7300 		and t3, t1, t2
+ 500 053c 631EDE15 		bne t3, t4, halt
+ 501
+ 502 0540 17040000 		auipc s0, 0				# xor
+ 503 0544 370301FF 		li t1, 0xFF00FF00
+ 503      130303F0
+ 504 054c B70300FF 		li t2, 0xFF0000FF
+ 504      9383F30F
+ 505 0554 B70E0100 		li t4, 0x0000FFFF
+ 505      938EFEFF
+ 506 055c 334E7300 		xor t3, t1, t2
+ 507 0560 631CDE13 		bne t3, t4, halt
+ 508
+ 509              	#
+ 510              	#	Check sign extended logical operations
+ 511              	#
+ 512
+ 513 0564 17040000 		auipc s0, 0				# ori	 (extend sign)
+ 514 0568 370301FF 		li t1, 0xFF00FF00
+ 514      130303F0
+ 515              	#	ori t3, t1, 0x80F
+ 516 0570 136EF380 		ori t3, t1, -2033		# 0x80F
+ 517 0574 930EF0F0 		li t4, 0xFFFFFF0F
+ 518 0578 6310DE13 		bne t3, t4, halt
+ 519
+ 520 057c 17040000 		auipc s0, 0				# ori
+ 521 0580 370301FF 		li t1, 0xFF00FF00
+ 521      130303F0
+ 522 0588 136EF370 		ori t3, t1, 0x70F
+ 523 058c B70E01FF 		li t4, 0xFF00FF0F
+ 523      938EFEF0
+ 524 0594 6312DE11 		bne t3, t4, halt
+ 525
+ 526 0598 17040000 		auipc s0, 0				# andi	 (extend sign)
+ 527 059c 370301FF 		li t1, 0xFF00FF00
+ 527      130303F0
+ 528              	#	andi t3, t1,0x80F
+ 529 05a4 137EF380 		andi t3, t1,-2033		# 0x80F
+ 530 05a8 B70E01FF 		li t4, 0xFF00F800
+ 530      938E0E80
+ 531 05b0 6314DE0F 		bne t3, t4, halt
+ 532
+ 533 05b4 17040000 		auipc s0, 0				# andi
+ 534 05b8 370301FF 		li t1, 0xFF00FF00
+ 534      130303F0
+ 535 05c0 137EF370 		andi t3, t1,0x70F
+ 536 05c4 930E0070 		li t4, 0x00000700
+ 537 05c8 6318DE0D 		bne t3, t4, halt
+ 538
+ 539 05cc 17040000 		auipc s0, 0				# xori	(extend sign)
+ 540 05d0 370301FF 		li t1, 0xFF00FF00
+ 540      130303F0
+ 541              	#	xori t3, t1,0x80F
+ 542 05d8 134EF380 		xori t3, t1, -2033		# 0x80F
+
+GAS LISTING rvn.s 			page 11
+
+
+ 543 05dc B70EFF00 		li t4, 0x00FF070F
+ 543      938EFE70
+ 544 05e4 631ADE0B 		bne t3, t4, halt
+ 545
+ 546 05e8 17040000 		auipc s0, 0				# xori
+ 547 05ec 370301FF 		li t1, 0xFF00FF00
+ 547      130303F0
+ 548 05f4 134EF370 		xori t3, t1,0x70F
+ 549 05f8 B70E01FF 		li t4, 0xFF00F80F
+ 549      938EFE80
+ 550 0600 631CDE09 		bne t3, t4, halt
+ 551
+ 552
+ 553              	#
+ 554              	#	Check ALU: arithmetic (very simple)
+ 555              	#
+ 556
+ 557 0604 17040000 		auipc s0, 0
+ 558 0608 1303F0FF 		li t1, -1
+ 559 060c 93031000 		li t2, 1
+ 560 0610 330E7300 		add t3, t1, t2
+ 561 0614 63120E08 		bne t3, zero, halt
+ 562
+ 563 0618 17040000 		auipc s0, 0
+ 564 061c 1303F0FF 		li t1, -1
+ 565 0620 9303F0FF 		li t2, -1
+ 566 0624 330E7300 		add t3, t1, t2
+ 567 0628 130E2E00 		addi t3, t3, 2
+ 568 062c 63160E06 		bne t3, zero, halt
+ 569
+ 570 0630 17040000 		auipc s0, 0
+ 571 0634 1303F0FF 		li t1, -1
+ 572 0638 93031000 		li t2, 1
+ 573 063c 330E7340 		sub t3, t1, t2
+ 574 0640 130E2E00 		addi t3, t3, 2
+ 575 0644 631A0E04 		bne t3, zero, halt
+ 576
+ 577 0648 17040000 		auipc s0, 0
+ 578 064c 1303F0FF 		li t1, -1
+ 579 0650 93031000 		li t2, 1
+ 580 0654 338E6340 		sub t3, t2, t1
+ 581 0658 130EEEFF 		addi t3, t3, -2
+ 582 065c 631E0E02 		bne t3, zero, halt
+ 583
+ 584 0660 17040000 		auipc s0, 0
+ 585 0664 1303F0FF 		li t1, -1
+ 586 0668 9303F0FF 		li t2, -1
+ 587 066c 330E7340 		sub t3, t1, t2
+ 588 0670 63140E02 		bne t3, zero, halt
+ 589
+ 590
+ 591              	#
+ 592              	#	Check JAL, JALR
+ 593              	#
+ 594
+ 595 0674 13031000 		li t1, 1
+ 596 0678 17040000 		auipc s0, 0
+
+GAS LISTING rvn.s 			page 12
+
+
+ 597 067c 6F090002 		jal s2,subr			# should be able to use any register for linkage
+ 598 0680 631C0300 		bne t1, zero, halt	# must not have called sub if t1 is still 1
+ 599
+ 600 0684 17040000 		auipc s0, 0			# success if got here!
+ 601
+ 602 0688 13031000 		li t1, 1
+ 603 068c 97090000 		auipc s3, 0			# see if we can construct address of subr
+ 604 0690 67890901 		jalr s2, 16(s3)		# LSB is forced to 0.  16 bytes from previous PC
+ 605 0694 63120300 		bne t1, zero, halt
+ 606
+ 607              	halt:
+ 608 0698 00000000 		.word 0				# should halt simulation here; exam  $s0 for failing PC
+ 609
+ 610              	subr:
+ 611 069c 13030000 		mv t1, zero			# clear t1 to show sub was called
+ 612 06a0 67000900 		jalr x0, 0(s2)		# can use any register for return
+ 613              	halts:
+ 614 06a4 00000000 		.word 0				# should cause halt if jalr not executed properly
+ 615
+ 616              	#
+ 617              	#	Error tests
+ 618              	#
+ 619
+ 620              	# write to zero
+ 621              	ewzero:
+ 622 06a8 17040000 		auipc s0, 0
+ 623 06ac 13030000 		mv t1, zero
+ 624 06b0 13001000 		addi zero, zero, 1
+ 625 06b4 E31203FE 		bne t1, zero, halt	# legal but shouldn't write the register
+ 626
+ 627              	# misalignment
+ 628
+ 629              	ealign:
+ 630 06b8 17040000 		auipc s0, 0
+ 631 06bc 97090000 		auipc s3, 0
+ 632 06c0 67892900 		jalr s2, 2(s3)		# should cause exception
+ 633 06c4 00000000 		.dword 0x00000000
+ 633      00000000
+ 634
+ 635              	# illegal instructions
+ 636
+ 637              	eillegal:
+ 638 06cc 3B6FFF02 		.word 0x02FF6F3B	# remw -- should be illegal on anything but RV64
+ 639 06d0 00000000 		.dword 0x00000000
+ 639      00000000
+ 640
+ 641              	#
+ 642              	#	Extra credit -- can set PC here to test
+ 643              	#
+ 644
+ 645              	extra:
+ 646 06d8 73000000 		ecall
+ 647 06dc 73001000 		ebreak
+ 648 06e0 00000000 		.word 0
+ 649
