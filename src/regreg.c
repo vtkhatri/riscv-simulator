@@ -1,8 +1,8 @@
+#include "regimm.h"
+
 #include "rsim.h"
 #include "instmasks.h"
 #include "gprf.h"
-
-#include "regimm.h"
 
 long long signextendmul(long long value) {
     long long mask;

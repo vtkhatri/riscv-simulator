@@ -1,4 +1,5 @@
 #include "gprf.h"
+#include "rsim.h"
 
 extern FILE *logfile;
 extern FILE *gprflogfile;

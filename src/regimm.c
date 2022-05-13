@@ -1,8 +1,8 @@
+#include "regimm.h"
+
 #include "rsim.h"
 #include "instmasks.h"
 #include "gprf.h"
-
-#include "regimm.h"
 
 #define regimmlength 12
 

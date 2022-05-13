@@ -1,3 +1,4 @@
+#include "rsim.h"
 #include "gprf.h"
 #include "mem.h"
 

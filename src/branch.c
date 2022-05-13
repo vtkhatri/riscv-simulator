@@ -1,7 +1,7 @@
-#include "rsim.h"
 #include "instmasks.h"
 #include "gprf.h"
 
+#include "rsim.h"
 #include "branch.h"
 
 #define branchimmlength 13

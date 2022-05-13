@@ -1,9 +1,9 @@
+#include "jump.h"
+
 #include "mem.h"
 #include "gprf.h"
 #include "rsim.h"
 #include "instmasks.h"
-
-#include "jump.h"
 
 int jumpandlinkregister(unsigned int rs1, unsigned int rd, unsigned int imm) {
     errno = 0;

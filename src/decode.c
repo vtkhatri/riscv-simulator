@@ -1,5 +1,6 @@
 #include "decode.h"
 
+#include "rsim.h"
 #include "instmasks.h"
 #include "regimm.h"
 #include "regreg.h"
